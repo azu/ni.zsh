@@ -13,6 +13,13 @@ source ni.zsh
 
 - [ ] correct distribution
 
+## Supports
+
+- npm
+- yarn v1
+- pnpm
+- bun
+
 ## Usage
 
 ```
