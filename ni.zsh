@@ -1,5 +1,7 @@
 # Alternative ni written in ShellScript
-# Ref https://github.com/antfu/ni
+# SPDX-License-Identifier: MIT
+# Author: @azu
+# Original: https://github.com/antfu/ni
 function echoRun() {
   echo "$ $@"
   eval "$@"
