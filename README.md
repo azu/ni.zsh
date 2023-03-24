@@ -20,6 +20,7 @@ ni                      -- install current package.json
 ni add <pkg>            -- add package
 ni remove <pkg>         -- remove package
 ni run <script>         -- run scripts
+ni test                 -- run test script
 ni upgrade              -- upgrade packages
 ni upgrade-interactive  -- upgrade package interactively
 ```
