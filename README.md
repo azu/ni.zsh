@@ -20,6 +20,10 @@ source ni.zsh
 - pnpm
 - bun
 
+## Requirements
+
+- `ni upgrade-interactive` require [npm-check](https://github.com/dylang/npm-check) command
+
 ## Usage
 
 ```
