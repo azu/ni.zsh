@@ -265,6 +265,7 @@ function _ni(){
   subcommands=(
     'add:add package'
     'run:run scripts'
+    'test:run test script'
     'upgrade:upgrade package'
     'upgrade-interactive:upgrade package interactively'
     'remove:remove package'
