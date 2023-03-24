@@ -6,7 +6,8 @@ Original: <https://github.com/antfu/ni>
 
 ## Installation
 
-```
+```shell
+curl https://raw.githubusercontent.com/azu/ni.zsh/main/ni.zsh > ni.zsh
 source ni.zsh
 ```
 
