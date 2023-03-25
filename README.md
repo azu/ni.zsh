@@ -24,7 +24,8 @@ source ni.zsh
 
 ## Requirements
 
-- `ni upgrade-interactive` require [npm-check](https://github.com/dylang/npm-check) command
+- zsh
+- [npm-check](https://github.com/dylang/npm-check) if you use `npm` + `ni upgrade-interactive` 
 
 ## Usage
 
