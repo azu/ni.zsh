@@ -2,7 +2,9 @@
 
 `ni` - use the right package manager
 
-Original: <https://github.com/antfu/ni>
+You can run npm/yarn/pnpm/bun with same command!
+
+- Original: <https://github.com/antfu/ni>
 
 ## Installation
 
