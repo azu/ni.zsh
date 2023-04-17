@@ -8,12 +8,23 @@ You can run npm/yarn/pnpm/bun with same command!
 
 ## Installation
 
+### Using Zinit
+
+```shell
+zinit load azu/ni.zsh@main
+```
+### Using Antigen
+
+```shell
+antigen bundle azu/ni.zsh@main
+```
+
+### Manually
+
 ```shell
 curl https://raw.githubusercontent.com/azu/ni.zsh/main/ni.zsh > ni.zsh
 source ni.zsh
 ```
-
-- [ ] correct distribution
 
 ## Supports
 
