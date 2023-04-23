@@ -11,7 +11,7 @@ You can run npm/yarn/pnpm/bun with same command!
 ### Using Zinit
 
 ```shell
-zinit load azu/ni.zsh@main
+zinit load azu/ni.zsh
 ```
 ### Using Antigen
 
