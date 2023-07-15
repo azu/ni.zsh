@@ -228,7 +228,7 @@ function ni-upgrade-interactive(){
       echoRun yarn upgrade-interactive --latest
       ;;
     pnpm)
-      echoRun pnpm update -i
+      echoRun pnpm --recursive update -i --latest 
       ;;
     bun)
       echo "bun does not support upgrade"
