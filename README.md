@@ -19,6 +19,13 @@ zinit load azu/ni.zsh
 antigen bundle azu/ni.zsh@main
 ```
 
+### Using sheldon
+
+```toml
+[plugins.ni]
+github = "azu/ni.zsh"
+```
+
 ### Manually
 
 ```shell
