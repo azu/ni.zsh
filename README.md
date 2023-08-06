@@ -13,6 +13,7 @@ You can run npm/yarn/pnpm/bun with same command!
 ```shell
 zinit load azu/ni.zsh
 ```
+
 ### Using Antigen
 
 ```shell
@@ -33,18 +34,19 @@ curl https://raw.githubusercontent.com/azu/ni.zsh/main/ni.zsh > ni.zsh
 source ni.zsh
 ```
 
-## Supports
+## Supported Package Manager
 
-- npm
-- yarn v1
-- pnpm
-- bun
+- [npm](https://docs.npmjs.com/cli/)
+- [yarn](https://classic.yarnpkg.com/) (yarn v1)
+- [yarn-berry](https://yarnpkg.com/) (yarn v2+)
+- [pnpm](https://pnpm.js.org/)
+- [bun](https://bun.sh/)
 
 ## Requirements
 
 - zsh
 - [jq](https://stedolan.github.io/jq/)
-- [npm-check](https://github.com/dylang/npm-check) if you use `npm` + `ni upgrade-interactive` 
+- [npm-check](https://github.com/dylang/npm-check) if you use `npm` + `ni upgrade-interactive`
 
 ## Usage
 
@@ -56,20 +58,21 @@ ni run <script>         -- run scripts
 ni test                 -- run test script
 ni upgrade              -- upgrade packages
 ni upgrade-interactive  -- upgrade package interactively
+ni exec <command>       -- download and execute command
 ```
 
 ## Command Table
 
-
-| ni                 | npm             | yarn                       | pnpm             | bun            |
-| ------------------------ | --------------- | -------------------------- | ---------------- | -------------- |
-| `ni`                     | `npm install`   | `yarn install`             | `pnpm install`   | `bun install`  |
-| `ni add <pkg>`           | `npm install`   | `yarn add`                 | `pnpm add`       | `bun add`      |
-| `ni remove <pkg>`        | `npm uninstall` | `yarn remove`              | `pnpm remove`    | `bun remove`   |
-| `ni run <script>`        | `npm run`       | `yarn run`                 | `pnpm run`       | `bun run`      |
-| `ni test`                | `npm test`      | `yarn run test`            | `pnpm run test`  | `bun run test` |
-| `ni upgrade`             | `npm upgrade`   | `yarn upgrade`             | `pnpm update`    | ○              |
-| `ni upgrade-interactive` | `npm-check`     | `yarn upgrade-interactive` | `pnpm update -i` | ○              |
+| ni                       | npm             | yarn                       | yarn-berry                 | pnpm             | bun            |
+|--------------------------|-----------------|----------------------------|----------------------------|------------------|----------------|
+| `ni`                     | `npm install`   | `yarn install`             | `yarn install`             | `pnpm install`   | `bun install`  |
+| `ni add <pkg>`           | `npm install`   | `yarn add`                 | `yarn add`                 | `pnpm add`       | `bun add`      |
+| `ni remove <pkg>`        | `npm uninstall` | `yarn remove`              | `yarn remove`              | `pnpm remove`    | `bun remove`   |
+| `ni run <script>`        | `npm run`       | `yarn run`                 | `yarn run`                 | `pnpm run`       | `bun run`      |
+| `ni test`                | `npm run test`  | `yarn run test`            | `yarn run test`            | `pnpm run test`  | `bun run test` |
+| `ni upgrade`             | `npm upgrade`   | `yarn upgrade`             | `yarn up`                  | `pnpm update`    | ○              |
+| `ni upgrade-interactive` | `npm-check`     | `yarn upgrade-interactive` | `yarn upgrade-interactive` | `pnpm update -i` | ○              |
+| `ni exec <command>`      | `npm exec`      | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         |
 
 ## Auto Complete
 

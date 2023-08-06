@@ -7,6 +7,12 @@ function echoRun() {
   eval "$@"
 }
 
+# Support package manager
+# - npm
+# - yarn - v1
+# - yarn-berry - v2+
+# - pnpm
+# - bun
 function getPackageManager() {
   # detect package manager via package.json
   if [ -f "package.json" ]; then
@@ -15,8 +21,14 @@ function getPackageManager() {
     if [ "$packageManager" != "null" ]; then
       # parse packageManager name from "<pkg>@<version>"
       packageManagerName=$(echo "$packageManager" | sed -e 's/@.*//')
+      packageManagerMajorVersion=$(echo "$packageManager" | sed -e 's/.*@//' | sed -e 's/\..*//')
       # supported package manager
       if [ "$packageManagerName" = "npm" ] || [ "$packageManagerName" = "pnpm" ] || [ "$packageManagerName" = "yarn" ] || [ "$packageManagerName" = "bun" ]; then
+        # yarn and version >= 2, then  yarn-berry
+        if [ "$packageManagerName" = "yarn" ] && [ "$packageManagerMajorVersion" -ge 2 ]; then
+          echo "yarn-berry"
+          return
+        fi
         echo "$packageManagerName"
         return
       fi
@@ -72,6 +84,10 @@ function ni() {
         shift
         ni-run test $@
         ;;
+      exec)
+        shift
+        ni-exec $@
+        ;;
       *)
         echo "Unknown subcommand: $1"
         ;;
@@ -85,7 +101,7 @@ function ni() {
     npm)
       echoRun npm install
       ;;
-    yarn)
+    yarn*)
       echoRun yarn install
       ;;
     pnpm)
@@ -121,7 +137,7 @@ function ni-add() {
         npm)
           flag="$flag --save-dev"
           ;;
-        yarn)
+        yarn*)
           flag="$flag --dev"
           ;;
         pnpm)
@@ -142,7 +158,7 @@ function ni-add() {
     npm)
       echoRun npm install $flag
       ;;
-    yarn)
+    yarn*)
       echoRun yarn add $flag
       ;;
     pnpm)
@@ -176,7 +192,7 @@ function ni-run(){
     npm)
       echoRun npm run $addtionalArgs $@
       ;;
-    yarn)
+    yarn*)
       echoRun yarn run $@
       ;;
     pnpm)
@@ -206,6 +222,9 @@ function ni-upgrade(){
     yarn)
       echoRun yarn upgrade $packageName
       ;;
+    yarn-berry)
+      echoRun yarn up $packageName
+      ;;
     pnpm)
       echoRun pnpm update $packageName
       ;;
@@ -224,11 +243,11 @@ function ni-upgrade-interactive(){
     npm)
       echoRun npm-check -u
       ;;
-    yarn)
+    yarn*)
       echoRun yarn upgrade-interactive --latest
       ;;
     pnpm)
-      echoRun pnpm --recursive update -i --latest 
+      echoRun pnpm --recursive update -i --latest
       ;;
     bun)
       echo "bun does not support upgrade"
@@ -248,7 +267,7 @@ function ni-remove(){
     npm)
       echoRun npm uninstall $@
       ;;
-    yarn)
+    yarn*)
       echoRun yarn remove $@
       ;;
     pnpm)
@@ -259,6 +278,37 @@ function ni-remove(){
       ;;
   esac
 }
+
+# ni exec - download and execute command
+# $ ni exec envinfo
+## npm exec envinfo
+## yarn dlx envinfo
+## pnpm dlx envinfo
+## bunx envinfo
+function ni-exec(){
+  local manager
+  manager=$(getPackageManager)
+  case $manager in
+    npm)
+      # https://docs.npmjs.com/cli/v8/commands/npm-exec
+      echoRun npm exec -- $@
+      ;;
+    yarn)
+      # yarn v1 does not support dlx
+      echoRun npx $@
+      ;;
+    yarn-berry)
+      echoRun yarn dlx $@
+      ;;
+    pnpm)
+      echoRun pnpm dlx $@
+      ;;
+    bun)
+      echoRun bunx $@
+      ;;
+  esac
+}
+
 
 # auto completion
 function _ni(){
@@ -271,6 +321,7 @@ function _ni(){
     'upgrade:upgrade package'
     'upgrade-interactive:upgrade package interactively'
     'remove:remove package'
+    'exec:download and execute command'
   )
   _describe -t subcommands 'subcommands' subcommands
 }
