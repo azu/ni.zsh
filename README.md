@@ -46,7 +46,7 @@ source ni.zsh
 
 - zsh
 - [jq](https://stedolan.github.io/jq/)
-- [npm-check](https://github.com/dylang/npm-check) if you use `npm` + `ni upgrade-interactive`
+- [npm-check](https://github.com/dylang/npm-check) if you want to use `npm` + `ni upgrade-interactive`
 
 ## Usage
 
