@@ -82,4 +82,4 @@ ni <TAB>
 
 ## License
 
-MIT ©️ azu
+MIT © azu
