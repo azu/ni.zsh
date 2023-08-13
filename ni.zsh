@@ -1,6 +1,7 @@
 # Alternative ni written in ShellScript
 # SPDX-License-Identifier: MIT
 # Author: @azu
+# Repository: https://github.com/azu/ni.zsh
 # Original: https://github.com/antfu/ni
 function echoRun() {
   echo "$ $@"
@@ -49,6 +50,109 @@ function getPackageManager() {
   fi
 }
 
+# Require: NI_SOCKET_TOKEN="https://socket.dev/ token"
+# Usage:
+# ni-assertPackageBySocket "pkg"
+# ni-assertPackageBySocket "pkg@version"
+function ni-assertPackageBySocket() {
+  # If NI_SOCKET_TOKEN is not set, then skip
+  if [ -z "$NI_SOCKET_TOKEN" ]; then
+    return
+  fi
+
+  # get package name from input string
+  # if `pkg@version` -> `pkg`
+  # if `@score/pkg@version` -> `@scope/pkg`
+  # if `pkg` -> `pkg`
+  function getPackageName() {
+    # If input string does not contain '@', return it as is
+    if [[ "$1" != *"@"* ]]; then
+      echo "$1"
+      return
+    fi
+    # If input string starts with '@', extract package name after the second '@'
+    if [[ "$1" == "@"* ]]; then
+      echo "@$(echo "$1" | cut -d "@" -f 2)"
+      return
+    fi
+    # If input string contains '@', extract package name before the '@'
+    echo "${1%%@*}"
+  }
+  # get package version from input string
+  # if `pkg@version` -> `version`
+  # if `@score/pkg@version`-> `version`
+  # if `@score/pkg`-> `lastest`
+  # if `pkg` -> `latest`
+  function getPackageVersion() {
+    # If input string does not contain '@', return 'latest'
+    if [[ "$1" != *"@"* ]]; then
+      echo "latest"
+      return
+    fi
+    # If input string starts with '@', extract package version after the third '@'
+    if [[ "$1" == "@"*"@"* ]]; then
+      echo "$(echo "$1" | cut -d "@" -f 3)"
+      return
+    fi
+      # If input string starts with '@', but does not contain '@<version', return 'latest'
+    if [[ "$1" == "@"* ]]; then
+      echo "latest"
+      return
+    fi
+    # If input string contains '@', extract package version after the last '@'
+    echo "$(echo "$1" | rev | cut -d "@" -f 1 | rev)"
+  }
+
+  local pkg
+  local version
+  pkg=$(getPackageName "$1")
+  version=$(getPackageVersion "$1")
+  # if version is latest, then get version from npm
+  if [ "$version" = "latest" ]; then
+    viewVersion=$(npm view "$pkg" version --json)
+    # if error reponse, then exit
+    if [ $? -ne 0 ]; then
+      echo "Error: $pkg is not found"
+      exit 1
+    fi
+    version=$(echo "${viewVersion}" | jq -r .)
+  fi
+  # check package score using Socket API
+  # https://docs.socket.dev/reference/getscorebynpmpackage
+  local bearerToken # it is base64 encoded of "$NI_SCOCKET_TOKEN:"
+  bearerToken=$(echo -n "$NI_SOCKET_TOKEN:" | base64)
+  local score
+  score=$(curl -s --request GET \
+    --url "https://api.socket.dev/v0/npm/${pkg}/${version}/score" \
+    --header 'accept: application/json' \
+    --header "authorization: Basic ${bearerToken}" | jq -r .supplyChainRisk.score)
+  # dump package score: higher is better
+  # score <= 0.3, dump with red color and confirm
+  # score <= 0.5, dump with yellow color and confirm
+  # score is other, dump with green color
+  if [ $(echo "$score <= 0.3" | bc -l) -eq 1 ]; then
+    echo -e "🔥 \033[31m$pkg@$version's score: $score\033[0m"
+    echo "🔗 https://socket.dev/npm/package/${pkg}/overview/${version}"
+    echo "This package have some risk."
+    echo "Are you sure to install this package?[y/N]"
+    read yn
+    if [ "$yn" != "y" ]; then
+      exit 1
+    fi
+  elif [ $(echo "$score <= 0.5" | bc -l) -eq 1 ]; then
+    echo -e "⚠️ \033[33m$pkg@$version's score: $score\033[0m"
+    echo "🔗 https://socket.dev/npm/package/${pkg}/overview/${version}"
+    echo "This package may have some risk."
+    echo "Are you sure to install this package?[y/N]"
+    read yn
+    if [ "$yn" != "y" ]; then
+      exit 1
+    fi
+  else
+    echo -e "📦 \033[32m$pkg@$version's score: $score\033[0m"
+  fi
+}
+
 # ni - install
 ## npm install
 ## yarn install
@@ -88,6 +192,10 @@ function ni() {
         shift
         ni-exec $@
         ;;
+      dlx)
+        shift
+        ni-dlx $@
+        ;;
       *)
         echo "Unknown subcommand: $1"
         ;;
@@ -126,6 +234,8 @@ function ni() {
 ## bun add -d @types/node
 
 function ni-add() {
+  # check package score
+  ni-assertPackageBySocket "$1"
   local manager
   manager=$(getPackageManager)
   # normailze flag by package manager
@@ -279,11 +389,11 @@ function ni-remove(){
   esac
 }
 
-# ni exec - download and execute command
+# ni exec - execute command
 # $ ni exec envinfo
 ## npm exec envinfo
-## yarn dlx envinfo
-## pnpm dlx envinfo
+## yarn exec envinfo
+## pnpm exec envinfo
 ## bunx envinfo
 function ni-exec(){
   local manager
@@ -291,7 +401,36 @@ function ni-exec(){
   case $manager in
     npm)
       # https://docs.npmjs.com/cli/v8/commands/npm-exec
-      echoRun npm exec -- $@
+      echoRun npm exec --no -- $@
+      ;;
+    yarn)
+      # yarn v1 does not support exec
+      echoRun yarn $@
+      ;;
+    yarn-berry)
+      echoRun yarn exec $@
+      ;;
+    pnpm)
+      echoRun pnpm exec $@
+      ;;
+    bun)
+      echoRun bunx $@
+      ;;
+  esac
+}
+
+# ni dlx -- download and execute command
+# $ ni dlx envinfo
+## npx envinfo
+## yarn dlx envinfo
+## pnpm dlx envinfo
+## bunx envinfo
+function ni-dlx(){
+  local manager
+  manager=$(getPackageManager)
+  case $manager in
+    npm)
+      echoRun npx $@
       ;;
     yarn)
       # yarn v1 does not support dlx
@@ -321,7 +460,8 @@ function _ni(){
     'upgrade:upgrade package'
     'upgrade-interactive:upgrade package interactively'
     'remove:remove package'
-    'exec:download and execute command'
+    'exec:execute command'
+    'dlx:download package and execute command'
   )
   _describe -t subcommands 'subcommands' subcommands
 }

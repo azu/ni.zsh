@@ -58,24 +58,35 @@ ni run <script>         -- run scripts
 ni test                 -- run test script
 ni upgrade              -- upgrade packages
 ni upgrade-interactive  -- upgrade package interactively
-ni exec <command or pkg>       -- download and execute command
+ni exec <command or pkg>       -- execute command
+ni dlx <pkg>            -- download package and execute command
 ```
 
 ## Command Table
 
-| ni                       | npm             | yarn                       | yarn-berry                 | pnpm             | bun            |
-|--------------------------|-----------------|----------------------------|----------------------------|------------------|----------------|
-| `ni`                     | `npm install`   | `yarn install`             | `yarn install`             | `pnpm install`   | `bun install`  |
-| `ni add <pkg>`           | `npm install`   | `yarn add`                 | `yarn add`                 | `pnpm add`       | `bun add`      |
-| `ni remove <pkg>`        | `npm uninstall` | `yarn remove`              | `yarn remove`              | `pnpm remove`    | `bun remove`   |
-| `ni run <script>`        | `npm run`       | `yarn run`                 | `yarn run`                 | `pnpm run`       | `bun run`      |
-| `ni test`                | `npm run test`  | `yarn run test`            | `yarn run test`            | `pnpm run test`  | `bun run test` |
-| `ni upgrade`             | `npm upgrade`   | `yarn upgrade`             | `yarn up`                  | `pnpm update`    | ○              |
-| `ni upgrade-interactive` | `npm-check`**^1**   | `yarn upgrade-interactive` | `yarn upgrade-interactive` | `pnpm update -i` | ○              |
-| `ni exec <command>`**^0**      | `npm exec`      | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         |
+| ni                       | npm               | yarn                       | yarn-berry                 | pnpm             | bun            |
+|--------------------------|-------------------|----------------------------|----------------------------|------------------|----------------|
+| `ni`                     | `npm install`     | `yarn install`             | `yarn install`             | `pnpm install`   | `bun install`  |
+| `ni add <pkg>`           | `npm install`     | `yarn add`                 | `yarn add`                 | `pnpm add`       | `bun add`      |
+| `ni remove <pkg>`        | `npm uninstall`   | `yarn remove`              | `yarn remove`              | `pnpm remove`    | `bun remove`   |
+| `ni run <script>`        | `npm run`         | `yarn run`                 | `yarn run`                 | `pnpm run`       | `bun run`      |
+| `ni test`                | `npm run test`    | `yarn run test`            | `yarn run test`            | `pnpm run test`  | `bun run test` |
+| `ni upgrade`             | `npm upgrade`     | `yarn upgrade`             | `yarn up`                  | `pnpm update`    | ○              |
+| `ni upgrade-interactive` | `npm-check`**^1** | `yarn upgrade-interactive` | `yarn upgrade-interactive` | `pnpm update -i` | ○              |
+| `ni exec <command>`      | `npm exec`        | `yarn <command>`           | `yarn exec`                | `pnpm exec`      | `bunx`         |
+| `ni dlx <command>`       | `npx`             | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         |
 
-- `^0`: Experimental Feature. It may be change
-- `^1`:  Require [npm-check](https://github.com/dylang/npm-check) globally
+## Experimental
+
+### Supply chain detections
+
+You can integrate https://socket.dev/ to detect supply chain attacks.
+
+If `NI_SOCKET_TOKEN` is set, `ni add` will check the package is safe or not before installing.
+
+```
+export NI_SOCKET_TOKEN="<socket-token>"
+```
 
 ## Auto Complete
 
