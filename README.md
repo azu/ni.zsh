@@ -71,8 +71,10 @@ ni exec <command>       -- download and execute command
 | `ni run <script>`        | `npm run`       | `yarn run`                 | `yarn run`                 | `pnpm run`       | `bun run`      |
 | `ni test`                | `npm run test`  | `yarn run test`            | `yarn run test`            | `pnpm run test`  | `bun run test` |
 | `ni upgrade`             | `npm upgrade`   | `yarn upgrade`             | `yarn up`                  | `pnpm update`    | ○              |
-| `ni upgrade-interactive` | `npm-check`     | `yarn upgrade-interactive` | `yarn upgrade-interactive` | `pnpm update -i` | ○              |
+| `ni upgrade-interactive` | `npm-check`**^1**   | `yarn upgrade-interactive` | `yarn upgrade-interactive` | `pnpm update -i` | ○              |
 | `ni exec <command>`      | `npm exec`      | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         |
+
+- `^1` Require: [npm-check](https://github.com/dylang/npm-check) globally
 
 ## Auto Complete
 
