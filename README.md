@@ -82,6 +82,8 @@ ni dlx <pkg>            -- download package and execute command
 
 You can integrate https://socket.dev/ to detect supply chain attacks.
 
+![Socket.dev Integration](./socket-integration.png)
+
 If `NI_SOCKET_TOKEN` is set, `ni add` will check the package is safe or not before installing.
 
 ```
