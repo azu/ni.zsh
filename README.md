@@ -58,7 +58,7 @@ ni run <script>         -- run scripts
 ni test                 -- run test script
 ni upgrade              -- upgrade packages
 ni upgrade-interactive  -- upgrade package interactively
-ni exec <command>       -- download and execute command
+ni exec <command or pkg>       -- download and execute command
 ```
 
 ## Command Table
