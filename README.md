@@ -88,6 +88,14 @@ If `NI_SOCKET_TOKEN` is set, `ni add` will check the package is safe or not befo
 export NI_SOCKET_TOKEN="<socket-token>"
 ```
 
+**How to get socket.dev token?**
+
+1. Go to https://socket.dev/
+2. Sign up
+3. Create a project
+4. Visit https://socket.dev/dashboard/org/gh/azu/settings/api-tokens
+5. Copy token
+
 ## Auto Complete
 
 ```sh
