@@ -50,13 +50,13 @@ function getPackageManager() {
   fi
 }
 
-# Require: NI_SOCKET_TOKEN="https://socket.dev/ token"
+# Require: NI_SOCKETDEV_TOKEN="https://socket.dev/ token"
 # Usage:
 # ni-assertPackageBySocket "pkg"
 # ni-assertPackageBySocket "pkg@version"
 function ni-assertPackageBySocket() {
-  # If NI_SOCKET_TOKEN is not set, then skip
-  if [ -z "$NI_SOCKET_TOKEN" ]; then
+  # If NI_SOCKETDEV_TOKEN is not set, then skip
+  if [ -z "$NI_SOCKETDEV_TOKEN" ]; then
     return
   fi
 
@@ -120,7 +120,7 @@ function ni-assertPackageBySocket() {
   # check package score using Socket API
   # https://docs.socket.dev/reference/getscorebynpmpackage
   local bearerToken # it is base64 encoded of "$NI_SCOCKET_TOKEN:"
-  bearerToken=$(echo -n "$NI_SOCKET_TOKEN:" | base64)
+  bearerToken=$(echo -n "$NI_SOCKETDEV_TOKEN:" | base64)
   local score
   score=$(curl -s --request GET \
     --url "https://api.socket.dev/v0/npm/${pkg}/${version}/score" \

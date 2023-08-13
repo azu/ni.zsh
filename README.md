@@ -84,10 +84,10 @@ You can integrate https://socket.dev/ to detect supply chain attacks.
 
 ![Socket.dev Integration](./socket-integration.jpg)
 
-If `NI_SOCKET_TOKEN` is set, `ni add` will check the package is safe or not before installing.
+If `NI_SOCKETDEV_TOKEN` is set, `ni add` will check the package is safe or not before installing.
 
 ```
-export NI_SOCKET_TOKEN="<socket-token>"
+export NI_SOCKETDEV_TOKEN="<socket-token>"
 ```
 
 **How to get socket.dev token?**
