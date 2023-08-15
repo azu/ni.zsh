@@ -76,6 +76,11 @@ ni dlx <pkg>            -- download package and execute command
 | `ni exec <command>`      | `npm exec --no`   | `yarn <command>`           | `yarn exec`                | `pnpm exec`      | `bunx`         |
 | `ni dlx <pkg>`       | `npx`             | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         |
 
+**Notes**
+
+- Installing devDependencies: `ni add --dev <pkg>`
+- Addtional arguments for `ni run`: `ni run dev --port 8080`
+
 ## Auto Complete
 
 ```sh
