@@ -1,0 +1,18 @@
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+devDependencies:
+  envinfo:
+    specifier: ^7.10.0
+    version: 7.10.0
+
+packages:
+
+  /envinfo@7.10.0:
+    resolution: {integrity: sha512-ZtUjZO6l5mwTHvc1L9+1q5p/R3wTopcfqMW8r5t8SJSKqeVI/LtajORwRFEKpEFuekjD0VBjwu1HMxL4UalIRw==}
+    engines: {node: '>=4'}
+    hasBin: true
+    dev: true
