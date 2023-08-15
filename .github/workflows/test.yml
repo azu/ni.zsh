@@ -13,7 +13,7 @@ jobs:
       - name: Test
         shell: zsh {0}
         run: |
-          set -ex
+          set -e
           # enable compinit before loading
           autoload -Uz compinit && compinit
           # load ni.zsh
