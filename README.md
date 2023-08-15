@@ -76,6 +76,12 @@ ni dlx <pkg>            -- download package and execute command
 | `ni exec <command>`      | `npm exec`        | `yarn <command>`           | `yarn exec`                | `pnpm exec`      | `bunx`         |
 | `ni dlx <pkg>`       | `npx`             | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         |
 
+## Auto Complete
+
+```sh
+ni <TAB>
+```
+
 ## Experimental
 
 ### Supply chain detections
@@ -98,11 +104,6 @@ export NI_SOCKETDEV_TOKEN="<socket-token>"
 4. Visit https://socket.dev/dashboard/org/gh/azu/settings/api-tokens
 5. Copy token
 
-## Auto Complete
-
-```sh
-ni <TAB>
-```
 
 ## License
 
