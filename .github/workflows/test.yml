@@ -4,9 +4,10 @@ permissions:
   contents: read
 jobs:
   test:
-    name: Test ${{ matrix.target }} on macos-latest
-    matrix:
-      target: [ "npm", "yarn","yarn-berry", "pnpm" ]
+    name: Test ${{ matrix.package-manager }} on macos-latest
+    strategy:
+      matrix:
+        package-manager: [ "npm", "yarn","yarn-berry", "pnpm" ]
     # zsh is pre-installed on macos-latest
     # https://github.com/actions/runner-images/issues/264
     runs-on: macos-latest
@@ -26,7 +27,7 @@ jobs:
           # load ni.zsh
           source ./ni.zsh
           # move to test dir
-          cd test/${{ matrix.target }}
+          cd test/${{ matrix.package-manager }}
           # Install dependencies
           ni
           # run tests
