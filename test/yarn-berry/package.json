@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "yarn-berry",
+  "scripts": {
+    "test": "echo 'run test'",
+    "main": "echo 'run main'"
+  },
+  "devDependencies": {
+    "envinfo": "^7.10.0"
+  },
+  "packageManager": "yarn@3.6.1"
+}

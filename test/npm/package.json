@@ -1,16 +1,10 @@
 {
   "private": true,
-  "name": "example",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "npm",
   "scripts": {
     "test": "echo 'run test'",
     "main": "echo 'run main'"
   },
-  "keywords": [],
-  "author": "azu",
-  "license": "MIT",
   "devDependencies": {
     "envinfo": "^7.10.0"
   },

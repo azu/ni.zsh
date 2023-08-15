@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "npm",
+  "scripts": {
+    "test": "echo 'run test'",
+    "main": "echo 'run main'"
+  },
+  "devDependencies": {
+    "envinfo": "^7.10.0"
+  },
+  "packageManager": "pnpm@8.6.12"
+}

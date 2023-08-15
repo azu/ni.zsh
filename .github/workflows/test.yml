@@ -4,7 +4,9 @@ permissions:
   contents: read
 jobs:
   test:
-    name: Test on macos-latest
+    name: Test ${{ matrix.target }} on macos-latest
+    matrix:
+      target: [ "npm", "yarn","yarn-berry", "pnpm" ]
     # zsh is pre-installed on macos-latest
     # https://github.com/actions/runner-images/issues/264
     runs-on: macos-latest
@@ -23,8 +25,8 @@ jobs:
           autoload -Uz compinit && compinit
           # load ni.zsh
           source ./ni.zsh
-          # move to test/example
-          cd test/example
+          # move to test dir
+          cd test/${{ matrix.target }}
           # Install dependencies
           ni
           # run tests
