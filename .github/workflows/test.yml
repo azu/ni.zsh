@@ -13,6 +13,7 @@ jobs:
       - name: Test
         shell: zsh {0}
         run: |
+          set -ex
           source ./ni.zsh
           # move to test/example
           cd test/example
