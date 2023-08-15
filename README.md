@@ -76,6 +76,8 @@ ni dlx <pkg>            -- download package and execute command
 | `ni exec <command>`      | `npm exec --no`   | `yarn <command>`           | `yarn exec`                | `pnpm exec`      | `bunx`         |
 | `ni dlx <pkg>`       | `npx`             | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         |
 
+- **^1**: require [npm-check](https://github.com/dylang/npm-check) globally.
+
 **Notes**
 
 - Installing devDependencies: `ni add --dev <pkg>`
