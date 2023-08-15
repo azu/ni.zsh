@@ -16,6 +16,7 @@ jobs:
           set -ex
           # enable compinit before loading
           autoload -Uz compinit && compinit
+          # load ni.zsh
           source ./ni.zsh
           # move to test/example
           cd test/example
