@@ -1,0 +1,29 @@
+name: test
+on: [ push, pull_request ]
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test
+        shell: zsh {0}
+        run: |
+          source ./ni.zsh
+          # Install dependencies
+          ni
+          # run tests
+          ni test
+          # run scripts
+          ni run main
+          # exec envinfo
+          ni exec envinfo
+          # add new dependencies
+          ni add lodash
+          # remove dependencies
+          ni remove lodash
