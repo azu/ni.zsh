@@ -74,7 +74,7 @@ ni dlx <pkg>            -- download package and execute command
 | `ni upgrade`             | `npm upgrade`     | `yarn upgrade`             | `yarn up`                  | `pnpm update`    | ○              |
 | `ni upgrade-interactive` | `npm-check`**^1** | `yarn upgrade-interactive` | `yarn upgrade-interactive` | `pnpm update -i` | ○              |
 | `ni exec <command>`      | `npm exec`        | `yarn <command>`           | `yarn exec`                | `pnpm exec`      | `bunx`         |
-| `ni dlx <command>`       | `npx`             | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         |
+| `ni dlx <pkg>`       | `npx`             | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         |
 
 ## Experimental
 
