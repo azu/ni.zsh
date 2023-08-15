@@ -5,7 +5,9 @@ permissions:
 jobs:
   test:
     name: Test on macos-latest
-    runs-on: macos-latest # zsh is pre-installed on macos-latest
+    # zsh is pre-installed on macos-latest
+    # https://github.com/actions/runner-images/issues/264
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
       - name: Test
