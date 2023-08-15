@@ -7,7 +7,7 @@ jobs:
     name: Test ${{ matrix.package-manager }} on macos-latest
     strategy:
       matrix:
-        package-manager: [ "npm", "yarn","yarn-berry", "pnpm" ]
+        package-manager: [ "npm", "yarn", "yarn-berry", "pnpm" ]
     # zsh is pre-installed on macos-latest
     # https://github.com/actions/runner-images/issues/264
     runs-on: macos-latest
