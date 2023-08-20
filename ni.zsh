@@ -102,7 +102,7 @@ function ni-assertPackageBySocket() {
     # If input string contains '@', extract package version after the last '@'
     echo "$(echo "$1" | rev | cut -d "@" -f 1 | rev)"
   }
-
+  
   local pkg
   local version
   pkg=$(getPackageName "$1")
@@ -113,7 +113,7 @@ function ni-assertPackageBySocket() {
     # if error reponse, then exit
     if [ $? -ne 0 ]; then
       echo "Error: $pkg is not found"
-      exit 1
+      return 1
     fi
     version=$(echo "${viewVersion}" | jq -r .)
   fi
@@ -137,7 +137,7 @@ function ni-assertPackageBySocket() {
     echo "Are you sure to install this package?[y/N]"
     read yn
     if [ "$yn" != "y" ]; then
-      exit 1
+      return 1
     fi
   elif [ $(echo "$score <= 0.5" | bc -l) -eq 1 ]; then
     echo -e "⚠️ \033[33m$pkg@$version's score: $score\033[0m"
@@ -146,7 +146,7 @@ function ni-assertPackageBySocket() {
     echo "Are you sure to install this package?[y/N]"
     read yn
     if [ "$yn" != "y" ]; then
-      exit 1
+      return 1
     fi
   else
     echo -e "📦 \033[32m$pkg@$version's score: $score\033[0m"
@@ -236,6 +236,10 @@ function ni() {
 function ni-add() {
   # check package score
   ni-assertPackageBySocket "$1"
+  if [[ $? -eq 1 ]]; then
+    return 1
+  fi
+  
   local manager
   manager=$(getPackageManager)
   # normailze flag by package manager
