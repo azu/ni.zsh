@@ -458,6 +458,12 @@ function ni-exec(){
 ## pnpm dlx envinfo
 ## bunx envinfo
 function ni-dlx(){
+  # check package score
+  ni-assertPackageBySocket "$1"
+  if [[ $? -eq 1 ]]; then
+    return 1
+  fi
+
   local manager
   manager=$(getPackageManager)
   case $manager in
