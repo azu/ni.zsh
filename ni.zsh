@@ -142,7 +142,7 @@ function ni-assertPackageBySocket() {
     --url "https://api.socket.dev/v0/npm/${pkg}/${version}/issues" \
     --header 'accept: application/json' \
     --header "authorization: Basic ${bearerToken}" \
-    | jq -r '[.[] | select(.value.category == "supplyChainRisk") | {severity: .value.severity, type: .type}] | sort_by(.severity) | map("* [\(.severity)] \(.type) - https://socket.dev/npm/issue/\(.type)") | join("\n")')
+    | jq -r '[.[] | select(.value.category == "supplyChainRisk") | {severity: .value.severity, type: .type}] | sort_by([.severity == "low", .severity == "middle", .severity == "high", .severity == "critical"]) | map("* [\(.severity)] \(.type) - https://socket.dev/npm/issue/\(.type)") | join("\n")')
     # jq filter is following logic
     # ```js
     # const message = test.filter((item) => {
