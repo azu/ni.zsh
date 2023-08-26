@@ -131,16 +131,42 @@ function ni-assertPackageBySocket() {
   # score <= 0.5, dump with yellow color and confirm
   # score is other, dump with green color
   if [ $(echo "$score <= 0.3" | bc -l) -eq 1 ]; then
-    echo -e "🔥 \033[31m$pkg@$version's score: $score\033[0m"
+    echo -e "🔥 \033[33m$pkg@$version is not safe\033[0m"
+    echo "🔥 Score: $score"
     echo "🔗 https://socket.dev/npm/package/${pkg}/overview/${version}"
     echo "This package have some risk."
+    echo "Fetching risk information from Socket.dev..."
+
+    local riskMessage;
+    riskMessage=$(curl -s --request GET \
+    --url "https://api.socket.dev/v0/npm/${pkg}/${version}/issues" \
+    --header 'accept: application/json' \
+    --header "authorization: Basic ${bearerToken}" \
+    | jq -r '[.[] | select(.value.category == "supplyChainRisk") | {severity: .value.severity, type: .type}] | sort_by(.severity) | map("* [\(.severity)] \(.type) - https://socket.dev/npm/issue/\(.type)") | join("\n")')
+    # jq filter is following logic
+    # ```js
+    # const message = test.filter((item) => {
+    #   return item.value.category === "supplyChainRisk";
+    # }).sort((a, b) => {
+    #   // sort by severity
+    #   // order: critical, high, middle, low
+    #   const orders = ["critical", "high", "middle", "low"];
+    #   return orders.indexOf(a.value.severity) - orders.indexOf(b.value.severity);
+    # }).map((item) => {
+    #   // [value.severity] [type] - https://socket.dev/npm/issue/${type}
+    #   return `* ${item.value.severity} ${item.type} - https://socket.dev/npm/issue/${item.type}`;
+    # });
+    # ```
+    echo -e "\033[31m$riskMessage\033[0m"
+    # show 
     echo "Are you sure to install this package?[y/N]"
     read yn
     if [ "$yn" != "y" ]; then
       return 1
     fi
   elif [ $(echo "$score <= 0.5" | bc -l) -eq 1 ]; then
-    echo -e "⚠️ \033[33m$pkg@$version's score: $score\033[0m"
+    echo -e "🟡 \033[33m$pkg@$version is not safe\033[0m"
+    echo "🟡 Score: $score"
     echo "🔗 https://socket.dev/npm/package/${pkg}/overview/${version}"
     echo "This package may have some risk."
     echo "Are you sure to install this package?[y/N]"
@@ -149,7 +175,9 @@ function ni-assertPackageBySocket() {
       return 1
     fi
   else
-    echo -e "📦 \033[32m$pkg@$version's score: $score\033[0m"
+    echo -e "🟢 \033[32m$pkg@$version is safe\033[0m"
+    echo "🟢 Score: $score"
+    echo "🔗 https://socket.dev/npm/package/${pkg}/overview/${version}"
   fi
 }
 
