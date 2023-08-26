@@ -91,7 +91,7 @@ ni <TAB>
 
 ## Experimental
 
-### Supply chain detections
+### Supply chain ricks detections
 
 You can integrate https://socket.dev/ to detect supply chain attacks.
 
