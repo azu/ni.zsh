@@ -3,7 +3,7 @@
 # Author: @azu
 # Repository: https://github.com/azu/ni.zsh
 # Original: https://github.com/antfu/ni
-function echoRun() {
+function ni-echoRun() {
   echo "$ $@"
   eval "$@"
 }
@@ -14,7 +14,7 @@ function echoRun() {
 # - yarn-berry - v2+
 # - pnpm
 # - bun
-function getPackageManager() {
+function ni-getPackageManager() {
   # detect package manager via package.json
   if [ -f "package.json" ]; then
     local packageManager
@@ -232,19 +232,19 @@ function ni() {
   fi
   # without argument - install
   local manager
-  manager=$(getPackageManager)
+  manager=$(ni-getPackageManager)
   case $manager in
     npm)
-      echoRun npm install
+      ni-echoRun npm install
       ;;
     yarn*)
-      echoRun yarn install
+      ni-echoRun yarn install
       ;;
     pnpm)
-      echoRun pnpm install
+      ni-echoRun pnpm install
       ;;
     bun)
-      echoRun bun install
+      ni-echoRun bun install
       ;;
   esac
 }
@@ -269,7 +269,7 @@ function ni-add() {
   fi
   
   local manager
-  manager=$(getPackageManager)
+  manager=$(ni-getPackageManager)
   # normailze flag by package manager
   flag=""
   for arg in "$@"; do
@@ -298,16 +298,16 @@ function ni-add() {
   # execute
   case $manager in
     npm)
-      echoRun npm install $flag
+      ni-echoRun npm install $flag
       ;;
     yarn*)
-      echoRun yarn add $flag
+      ni-echoRun yarn add $flag
       ;;
     pnpm)
-      echoRun pnpm add $flag
+      ni-echoRun pnpm add $flag
       ;;
     bun)
-      echoRun bun add $flag
+      ni-echoRun bun add $flag
       ;;
   esac
 }
@@ -321,7 +321,7 @@ function ni-add() {
 
 function ni-run(){
   local manager
-  manager=$(getPackageManager)
+  manager=$(ni-getPackageManager)
   # npm require -- for additional args
   addtionalArgs=""
   case $manager in
@@ -332,16 +332,16 @@ function ni-run(){
   # execute
   case $manager in
     npm)
-      echoRun npm run $addtionalArgs $@
+      ni-echoRun npm run $addtionalArgs $@
       ;;
     yarn*)
-      echoRun yarn run $@
+      ni-echoRun yarn run $@
       ;;
     pnpm)
-      echoRun pnpm run $@
+      ni-echoRun pnpm run $@
       ;;
     bun)
-      echoRun bun run $@
+      ni-echoRun bun run $@
       ;;
   esac
 }
@@ -355,20 +355,20 @@ function ni-run(){
 
 function ni-upgrade(){
   local manager
-  manager=$(getPackageManager)
+  manager=$(ni-getPackageManager)
   packageName=$1
   case $manager in
     npm)
-      echoRun npm upgrade $packageName
+      ni-echoRun npm upgrade $packageName
       ;;
     yarn)
-      echoRun yarn upgrade $packageName
+      ni-echoRun yarn upgrade $packageName
       ;;
     yarn-berry)
-      echoRun yarn up $packageName
+      ni-echoRun yarn up $packageName
       ;;
     pnpm)
-      echoRun pnpm update $packageName
+      ni-echoRun pnpm update $packageName
       ;;
     bun)
       echo "bun does not support upgrade"
@@ -380,16 +380,16 @@ function ni-upgrade(){
 # use https://github.com/dylang/npm-check
 function ni-upgrade-interactive(){
   local manager
-  manager=$(getPackageManager)
+  manager=$(ni-getPackageManager)
   case $manager in
     npm)
-      echoRun npm-check -u
+      ni-echoRun npm-check -u
       ;;
     yarn*)
-      echoRun yarn upgrade-interactive --latest
+      ni-echoRun yarn upgrade-interactive --latest
       ;;
     pnpm)
-      echoRun pnpm --recursive update -i --latest
+      ni-echoRun pnpm --recursive update -i --latest
       ;;
     bun)
       echo "bun does not support upgrade"
@@ -404,19 +404,19 @@ function ni-upgrade-interactive(){
 ## bun remove webpack
 function ni-remove(){
   local manager
-  manager=$(getPackageManager)
+  manager=$(ni-getPackageManager)
   case $manager in
     npm)
-      echoRun npm uninstall $@
+      ni-echoRun npm uninstall $@
       ;;
     yarn*)
-      echoRun yarn remove $@
+      ni-echoRun yarn remove $@
       ;;
     pnpm)
-      echoRun pnpm remove $@
+      ni-echoRun pnpm remove $@
       ;;
     bun)
-      echoRun bun remove $@
+      ni-echoRun bun remove $@
       ;;
   esac
 }
@@ -429,24 +429,24 @@ function ni-remove(){
 ## bunx envinfo
 function ni-exec(){
   local manager
-  manager=$(getPackageManager)
+  manager=$(ni-getPackageManager)
   case $manager in
     npm)
       # https://docs.npmjs.com/cli/v8/commands/npm-exec
-      echoRun npm exec --no -- $@
+      ni-echoRun npm exec --no -- $@
       ;;
     yarn)
       # yarn v1 does not support exec
-      echoRun yarn $@
+      ni-echoRun yarn $@
       ;;
     yarn-berry)
-      echoRun yarn exec $@
+      ni-echoRun yarn exec $@
       ;;
     pnpm)
-      echoRun pnpm exec $@
+      ni-echoRun pnpm exec $@
       ;;
     bun)
-      echoRun bunx $@
+      ni-echoRun bunx $@
       ;;
   esac
 }
@@ -465,23 +465,23 @@ function ni-dlx(){
   fi
 
   local manager
-  manager=$(getPackageManager)
+  manager=$(ni-getPackageManager)
   case $manager in
     npm)
-      echoRun npx $@
+      ni-echoRun npx $@
       ;;
     yarn)
       # yarn v1 does not support dlx
-      echoRun npx $@
+      ni-echoRun npx $@
       ;;
     yarn-berry)
-      echoRun yarn dlx $@
+      ni-echoRun yarn dlx $@
       ;;
     pnpm)
-      echoRun pnpm dlx $@
+      ni-echoRun pnpm dlx $@
       ;;
     bun)
-      echoRun bunx $@
+      ni-echoRun bunx $@
       ;;
   esac
 }
