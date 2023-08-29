@@ -56,7 +56,7 @@ ni add <pkg>            -- add package
 ni remove <pkg>         -- remove package
 ni run <script>         -- run scripts
 ni test                 -- run test script
-ni upgrade              -- upgrade packages
+ni upgrade [<pkg>]      -- upgrade packages
 ni upgrade-interactive  -- upgrade package interactively
 ni exec <command>       -- execute command
 ni dlx <pkg>            -- download package and execute command
@@ -82,6 +82,7 @@ ni dlx <pkg>            -- download package and execute command
 
 - Installing devDependencies: `ni add --dev <pkg>`
 - Addtional arguments for `ni run`: `ni run dev --port 8080`
+- Update specific package: `ni update <pkg>`
 
 ## Auto Complete
 
