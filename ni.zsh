@@ -374,7 +374,8 @@ function ni-upgrade(){
       ni-echoRun pnpm update $packageName
       ;;
     bun)
-      echo "bun does not support upgrade"
+      # https://bun.sh/blog/bun-v0.8.0
+      ni-echoRun bun update $packageName
       ;;
   esac
 }
