@@ -1,4 +1,4 @@
-# Alternative ni written in zsh
+# Alternative `ni` written in zsh
 
 `ni` - use the right package manager
 
