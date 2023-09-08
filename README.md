@@ -34,6 +34,19 @@ curl https://raw.githubusercontent.com/azu/ni.zsh/main/ni.zsh > ni.zsh
 source ni.zsh
 ```
 
+### :warning: Troubleshooting: `command not found: compdef`
+
+`ni.zsh` requires `compdef` command.
+If you got `command not found: compdef` error, you need to enable `compinit` in your `.zshrc`.
+
+```shell
+# .zshrc
+# load compdef
+autoload -Uz compinit && compinit
+# load ni.zsh
+source /path/to/ni.zsh
+```
+
 ## Supported Package Manager
 
 - [npm](https://docs.npmjs.com/cli/)
@@ -45,6 +58,7 @@ source ni.zsh
 ## Requirements
 
 - zsh
+  - require to enable `autoload -Uz compinit && compinit`
 - [jq](https://stedolan.github.io/jq/)
 - [npm-check](https://github.com/dylang/npm-check) if you want to use `npm` + `ni upgrade-interactive`
 
