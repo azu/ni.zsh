@@ -102,7 +102,7 @@ function ni-assertPackageBySocket() {
     # If input string contains '@', extract package version after the last '@'
     echo "$(echo "$1" | rev | cut -d "@" -f 1 | rev)"
   }
-  
+
   local pkg
   local version
   pkg=$(getPackageName "$1")
@@ -161,7 +161,7 @@ function ni-assertPackageBySocket() {
     # });
     # ```
     echo -e "\033[31m$riskMessage\033[0m"
-    # show 
+    # show
     echo "Are you sure to install this package?[y/N]"
     read yn
     if [ "$yn" != "y" ]; then
@@ -270,7 +270,7 @@ function ni-add() {
   if [[ $? -eq 1 ]]; then
     return 1
   fi
-  
+
   local manager
   manager=$(ni-getPackageManager)
   # normailze flag by package manager
@@ -389,8 +389,11 @@ function ni-upgrade-interactive(){
     npm)
       ni-echoRun npm-check -u
       ;;
-    yarn*)
+    yarn)
       ni-echoRun yarn upgrade-interactive --latest
+      ;;
+    yarn-berry)
+      ni-echoRun yarn up --interactive "*"
       ;;
     pnpm)
       ni-echoRun pnpm --recursive update -i --latest

@@ -86,7 +86,7 @@ ni dlx <pkg>            -- download package and execute command
 | `ni run <script>`        | `npm run`         | `yarn run`                 | `yarn run`                 | `pnpm run`       | `bun run`      |
 | `ni test`                | `npm run test`    | `yarn run test`            | `yarn run test`            | `pnpm run test`  | `bun run test` |
 | `ni upgrade`             | `npm upgrade`     | `yarn upgrade`             | `yarn up`                  | `pnpm update`    | `bun update`              |
-| `ni upgrade-interactive` | `npm-check`**^1** | `yarn upgrade-interactive` | `yarn upgrade-interactive` | `pnpm update -i` | ○              |
+| `ni upgrade-interactive` | `npm-check`**^1** | `yarn up --interactive "*"` | `yarn upgrade-interactive` | `pnpm update -i` | ○              |
 | `ni exec <command>`      | `npm exec --no`   | `yarn <command>`           | `yarn exec`                | `pnpm exec`      | `bunx`         |
 | `ni dlx <pkg>`       | `npx`             | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         |
 
