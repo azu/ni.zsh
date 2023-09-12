@@ -393,7 +393,7 @@ function ni-upgrade-interactive(){
       ni-echoRun yarn upgrade-interactive --latest
       ;;
     yarn-berry)
-      ni-echoRun yarn up --interactive "*"
+      ni-echoRun 'yarn up --interactive "*"'
       ;;
     pnpm)
       ni-echoRun pnpm --recursive update -i --latest
