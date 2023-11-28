@@ -41,6 +41,8 @@ function ni-getPackageManager() {
     echo "pnpm"
   elif [ -f "bun.lockb" ]; then
     # choose bun if both bun.lockb and yarn.lock exist
+    # bun generate yarn.lock and bun.lockb when print=yarn is set
+    # https://bun.sh/docs/install/lockfile
     echo "bun"
   elif [ -f "yarn.lock" ]; then
     echo "yarn"
