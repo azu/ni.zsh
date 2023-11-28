@@ -39,12 +39,13 @@ function ni-getPackageManager() {
   # detect package manager via lock file
   if [ -f "pnpm-lock.yaml" ]; then
     echo "pnpm"
+  elif [ -f "bun.lockb" ]; then
+    # choose bun if both bun.lockb and yarn.lock exist
+    echo "bun"
   elif [ -f "yarn.lock" ]; then
     echo "yarn"
   elif [ -f "package-lock.json" ]; then
     echo "npm"
-  elif [ -f "bun.lockb" ]; then
-    echo "bun"
   else
     echo "npm"
   fi
