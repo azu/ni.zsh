@@ -257,19 +257,35 @@ function ni() {
 
 # ni add - add package
 # $ ni add vite
-## npm i vite
+## npm install vite
 ## yarn add vite
 ## pnpm add vite
 ## bun add vite
 # $ ni @types/node --dev
-## npm i @types/node -D
+## npm install @types/node -D
 ## yarn add @types/node -D
 ## pnpm add -D @types/node
 ## bun add -d @types/node
 
 function ni-add() {
+  # support both `ni add pkg --dev` and `ni add --dev pkg`
+  POSITIONAL_ARGS=()
+  SUPPORTED_FLGAG=()
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+      -D|--dev)
+        shift
+        SUPPORTED_FLGAG+=("--dev")
+        ;;
+      *)
+        POSITIONAL_ARGS+=("$1")
+        shift
+        ;;
+    esac
+  done
   # check package score
-  ni-assertPackageBySocket "$1"
+  ni-assertPackageBySocket "${POSITIONAL_ARGS[1]}"
   if [[ $? -eq 1 ]]; then
     return 1
   fi
@@ -278,25 +294,25 @@ function ni-add() {
   manager=$(ni-getPackageManager)
   # normailze flag by package manager
   flag=""
-  for arg in "$@"; do
+  for arg in "${SUPPORTED_FLGAG}"; do
     # --dev or -D
-    if [ "$arg" = "-D" ] || [ "$arg" = "--dev" ] ; then
+    if [ "$arg" = "--dev" ] ; then
       case $manager in
         npm)
-          flag="$flag --save-dev"
+          flag="$POSITIONAL_ARGS --save-dev"
           ;;
         yarn*)
-          flag="$flag --dev"
+          flag="$POSITIONAL_ARGS --dev"
           ;;
         pnpm)
-          flag="$flag -D"
+          flag="$POSITIONAL_ARGS -D"
           ;;
         bun)
-          flag="$flag -d"
+          flag="$POSITIONAL_ARGS -d"
           ;;
       esac
     else
-      flag="$flag $arg"
+      flag="$POSITIONAL_ARGS $arg"
     fi
   done
   # trim space from $flag
