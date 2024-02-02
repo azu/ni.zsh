@@ -312,7 +312,7 @@ function ni-add() {
           ;;
       esac
     else
-      flag="$flag $arg"
+      flag="$POSITIONAL_ARGS $arg"
     fi
   done
   # trim space from $flag
