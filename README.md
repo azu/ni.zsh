@@ -95,7 +95,7 @@ ni dlx <pkg>            -- download package and execute command
 **Notes**
 
 - Installing devDependencies: `ni add --dev <pkg>`
-- Addtional arguments for `ni run`: `ni run dev --port 8080`
+- Additional arguments for `ni run`: `ni run dev --port 8080`
 - Update specific package: `ni upgrade <pkg>`
 
 ## Auto Complete
