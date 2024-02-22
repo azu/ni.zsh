@@ -84,7 +84,7 @@ function ni-assertPackageBySocket() {
   # get package version from input string
   # if `pkg@version` -> `version`
   # if `@score/pkg@version`-> `version`
-  # if `@score/pkg`-> `lastest`
+  # if `@score/pkg`-> `latest`
   # if `pkg` -> `latest`
   function getPackageVersion() {
     # If input string does not contain '@', return 'latest'
@@ -113,7 +113,7 @@ function ni-assertPackageBySocket() {
   # if version is latest, then get version from npm
   if [ "$version" = "latest" ]; then
     viewVersion=$(npm view "$pkg" version --json)
-    # if error reponse, then exit
+    # if error response, then exit
     if [ $? -ne 0 ]; then
       echo "Error: $pkg is not found"
       return 1
@@ -345,16 +345,16 @@ function ni-run(){
   local manager
   manager=$(ni-getPackageManager)
   # npm require -- for additional args
-  addtionalArgs=""
+  additionalArgs=""
   case $manager in
     npm)
-      addtionalArgs="--"
+      additionalArgs="--"
       ;;
   esac
   # execute
   case $manager in
     npm)
-      ni-echoRun npm run $addtionalArgs $@
+      ni-echoRun npm run $additionalArgs $@
       ;;
     yarn*)
       ni-echoRun yarn run $@
