@@ -380,16 +380,16 @@ function ni-run(){
   local manager
   manager=$(ni-getPackageManager)
   # npm require -- for additional args
-  addtionalArgs=""
+  additionalArgs=""
   case $manager in
     npm)
-      addtionalArgs="--"
+      additionalArgs="--"
       ;;
   esac
   # execute
   case $manager in
     npm)
-      ni-echoRun npm run $addtionalArgs $@
+      ni-echoRun npm run $additionalArgs $@
       ;;
     yarn*)
       ni-echoRun yarn run $@
