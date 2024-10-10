@@ -111,7 +111,7 @@ function ni-assertPackageBySocket() {
   # get package version from input string
   # if `pkg@version` -> `version`
   # if `@score/pkg@version`-> `version`
-  # if `@score/pkg`-> `lastest`
+  # if `@score/pkg`-> `latest`
   # if `pkg` -> `latest`
   function getPackageVersion() {
     # If input string does not contain '@', return 'latest'
