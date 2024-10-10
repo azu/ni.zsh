@@ -140,7 +140,7 @@ function ni-assertPackageBySocket() {
   # if version is latest, then get version from npm
   if [ "$version" = "latest" ]; then
     viewVersion=$(npm view "$pkg" version --json)
-    # if error reponse, then exit
+    # if error response, then exit
     if [ $? -ne 0 ]; then
       echo "Error: $pkg is not found"
       return 1
