@@ -14,11 +14,14 @@ function ni-echoRun() {
 # - yarn-berry - v2+
 # - pnpm
 # - bun
+# - deno - v2+
 function ni-getPackageManager() {
+  # cwd is argument 1, if not set, use current directory
+  local cwd=${1:-$(pwd)}
   # detect package manager via package.json
-  if [ -f "package.json" ]; then
+  if [ -f "${cwd}/package.json" ]; then
     local packageManager
-    packageManager=$(cat package.json | jq -r .packageManager)
+    packageManager=$(cat "${cwd}/package.json" | jq -r .packageManager)
     if [ "$packageManager" != "null" ]; then
       # parse packageManager name from "<pkg>@<version>"
       packageManagerName=$(echo "$packageManager" | sed -e 's/@.*//')
@@ -37,19 +40,43 @@ function ni-getPackageManager() {
   fi
 
   # detect package manager via lock file
-  if [ -f "pnpm-lock.yaml" ]; then
+  if [ -f "${cwd}/deno.lock" ]; then
+    echo "deno"
+  elif [ -f "${cwd}/pnpm-lock.yaml" ]; then
     echo "pnpm"
-  elif [ -f "bun.lockb" ]; then
+  elif [ -f "${cwd}/bun.lockb" ]; then
     # choose bun if both bun.lockb and yarn.lock exist
     # bun generate yarn.lock and bun.lockb when print=yarn is set
     # https://bun.sh/docs/install/lockfile
     echo "bun"
-  elif [ -f "yarn.lock" ]; then
+  elif [ -f "${cwd}/yarn.lock" ]; then
     echo "yarn"
-  elif [ -f "package-lock.json" ]; then
+  elif [ -f "${cwd}/package-lock.json" ]; then
     echo "npm"
+  # if current directory does not contain any lock file, then check git root directory
+  # Note: if current is in workspace, then use workspace package manager which is defined in root directory
   else
-    echo "npm"
+    local rootDir
+    rootDir=$(git rev-parse --show-toplevel 2>/dev/null)
+    if [ -z "$rootDir" ]; then
+      # default to npm
+      echo "npm"
+      return
+    fi
+    local parentDir
+    parentDir=$(dirname "$cwd")
+    # if parentDir is not under of rootDir, then default to npm
+    # it is out of workspace
+    if [[ "$parentDir" != "$rootDir"* ]]; then
+      echo "npm"
+      return
+    fi
+    # recursive call to getPackageManager
+    ret=$(ni-getPackageManager "$parentDir")
+    if [ -n "$ret" ]; then
+      echo "$ret"
+      return
+    fi
   fi
 }
 
@@ -192,6 +219,7 @@ function ni-assertPackageBySocket() {
 ## yarn install
 ## pnpm install
 ## bun install
+## deno install
 # Note: # ni <subcommand> - run subcommand
 function ni() {
   # with argument - subcommand
@@ -252,6 +280,9 @@ function ni() {
     bun)
       ni-echoRun bun install
       ;;
+    deno)
+      ni-echoRun deno install
+      ;;
   esac
 }
 
@@ -261,6 +292,7 @@ function ni() {
 ## yarn add vite
 ## pnpm add vite
 ## bun add vite
+## deno add npm:vite
 # $ ni @types/node --dev
 ## npm install @types/node -D
 ## yarn add @types/node -D
@@ -331,6 +363,9 @@ function ni-add() {
     bun)
       ni-echoRun bun add $flag
       ;;
+    deno)
+      ni-echoRun deno add $flag
+      ;;
   esac
 }
 
@@ -340,7 +375,7 @@ function ni-add() {
 ## yarn run dev --port=3000
 ## pnpm run dev --port=3000
 ## bun run dev --port=3000
-
+## deno run dev --port=3000
 function ni-run(){
   local manager
   manager=$(ni-getPackageManager)
@@ -365,6 +400,9 @@ function ni-run(){
     bun)
       ni-echoRun bun run $@
       ;;
+    deno)
+      ni-echoRun deno run $@
+      ;;
   esac
 }
 
@@ -374,7 +412,7 @@ function ni-run(){
 ## yarn upgrade (Yarn 1)
 ## yarn up (Yarn Berry)
 ## pnpm update
-
+## [ ] deno
 function ni-upgrade(){
   local manager
   manager=$(ni-getPackageManager)
@@ -395,6 +433,9 @@ function ni-upgrade(){
     bun)
       # https://bun.sh/blog/bun-v0.8.0
       ni-echoRun bun update $packageName
+      ;;
+    deno)
+      echo "deno does not support upgrade command"
       ;;
   esac
 }
@@ -418,7 +459,10 @@ function ni-upgrade-interactive(){
       ni-echoRun pnpm --recursive update -i --latest
       ;;
     bun)
-      echo "bun does not support upgrade"
+      echo "bun does not support upgrade interactive command"
+      ;;
+    deno)
+      echo "deno does not support upgrade interactive command"
       ;;
   esac
 }
@@ -428,6 +472,7 @@ function ni-upgrade-interactive(){
 ## yarn remove webpack
 ## pnpm remove webpack
 ## bun remove webpack
+## deno remove npm:webpack
 function ni-remove(){
   local manager
   manager=$(ni-getPackageManager)
@@ -444,6 +489,9 @@ function ni-remove(){
     bun)
       ni-echoRun bun remove $@
       ;;
+    deno)
+      ni-echoRun deno remove $@
+      ;;
   esac
 }
 
@@ -453,6 +501,7 @@ function ni-remove(){
 ## yarn exec envinfo
 ## pnpm exec envinfo
 ## bunx envinfo
+## [ ] deno 
 function ni-exec(){
   local manager
   manager=$(ni-getPackageManager)
@@ -474,6 +523,9 @@ function ni-exec(){
     bun)
       ni-echoRun bunx $@
       ;;
+    deno)
+      echo "deno does not support exec command"
+      ;;
   esac
 }
 
@@ -483,6 +535,7 @@ function ni-exec(){
 ## yarn dlx envinfo
 ## pnpm dlx envinfo
 ## bunx envinfo
+## [ ] deno
 function ni-dlx(){
   # check package score
   ni-assertPackageBySocket "$1"
@@ -508,6 +561,9 @@ function ni-dlx(){
       ;;
     bun)
       ni-echoRun bunx $@
+      ;;
+    deno)
+      echo "deno does not support dlx command"
       ;;
   esac
 }
