@@ -472,7 +472,7 @@ function ni-upgrade-interactive(){
 ## yarn remove webpack
 ## pnpm remove webpack
 ## bun remove webpack
-## deno remove npm:webpack
+## deno uninstall npm:webpack
 function ni-remove(){
   local manager
   manager=$(ni-getPackageManager)
@@ -490,7 +490,7 @@ function ni-remove(){
       ni-echoRun bun remove $@
       ;;
     deno)
-      ni-echoRun deno remove $@
+      ni-echoRun deno uninstall $@
       ;;
   esac
 }
