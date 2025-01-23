@@ -44,7 +44,7 @@ function ni-getPackageManager() {
     echo "deno"
   elif [ -f "${cwd}/pnpm-lock.yaml" ]; then
     echo "pnpm"
-  elif [ -f "${cwd}/bun.lockb" ]; then
+  elif [ -f "${cwd}/bun.lock" || -f "${cwd}/bun.lockb" ]; then
     # choose bun if both bun.lockb and yarn.lock exist
     # bun generate yarn.lock and bun.lockb when print=yarn is set
     # https://bun.sh/docs/install/lockfile
