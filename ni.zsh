@@ -571,18 +571,76 @@ function ni-dlx(){
 
 # auto completion
 function _ni(){
-  # ni <subcommands>
-  local -a subcommands
-  subcommands=(
-    'add:add package'
-    'run:run scripts'
-    'test:run test script'
-    'upgrade:upgrade package'
-    'upgrade-interactive:upgrade package interactively'
-    'remove:remove package'
-    'exec:execute command'
-    'dlx:download package and execute command'
-  )
-  _describe -t subcommands 'subcommands' subcommands
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '1: :->cmds' \
+    '*:: :->args'
+
+  case "$state" in
+    cmds)
+      # ni <subcommands>
+      local -a subcommands
+      subcommands=(
+        'add:add package'
+        'run:run scripts'
+        'test:run test script'
+        'upgrade:upgrade package'
+        'upgrade-interactive:upgrade package interactively'
+        'remove:remove package'
+        'exec:execute command'
+        'dlx:download package and execute command'
+      )
+      _describe -t subcommands 'subcommands' subcommands
+      ;;
+    args)
+      case $line[1] in
+        add)
+          _arguments \
+            '--dev[Install as development dependency]' \
+            '-D[Install as development dependency]'
+          ;;
+        remove|upgrade)
+          if [ -f "package.json" ]; then
+            if command -v jq >/dev/null 2>&1; then
+              local -a packages
+              packages=(${(f)"$(cat package.json | jq -r '.dependencies // {} | to_entries | .[] | select(.key != "") | "\(.key):\(.value)"')"})
+              packages+=(${(f)"$(cat package.json | jq -r '.devDependencies // {} | to_entries | .[] | select(.key != "") | "\(.key):\(.value)"')"})
+              _describe -t packages 'packages' packages
+            else
+              _files
+            fi
+          fi
+          ;;
+        run)
+          if command -v jq >/dev/null 2>&1; then
+            if [ -f "package.json" ]; then
+              local -a script_entries
+              local key value escaped_key
+              while IFS=$'\t' read -r key value; do
+                escaped_key=${key//:/\\:}
+                script_entries+=("$escaped_key:$value")
+              done < <(cat package.json | jq -r '.scripts | to_entries | .[] | select(.key != "") | "\(.key)\t\(.value)"')
+              _describe -t scripts 'scripts' script_entries
+            elif [ -f "deno.json" ]; then
+              local -a task_entries
+              local key value escaped_key
+              while IFS=$'\t' read -r key value; do
+                escaped_key=${key//:/\\:}
+                task_entries+=("$escaped_key:$value")
+              done < <(cat deno.json | jq -r '.tasks | to_entries | .[] | select(.key != "") | "\(.key)\t\(.value)"')
+              _describe -t tasks 'tasks' task_entries
+            else
+              _files
+            fi
+          else
+            _files
+          fi
+          ;;
+      esac
+      ;;
+  esac
 }
+
 compdef _ni ni
