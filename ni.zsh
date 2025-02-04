@@ -597,11 +597,14 @@ function _ni(){
     args)
       case $line[1] in
         add)
+          # ni add <package>
           _arguments \
             '--dev[Install as development dependency]' \
             '-D[Install as development dependency]'
           ;;
         remove|upgrade)
+          # ni remove <package>
+          # ni upgrade <package>
           if [ -f "package.json" ]; then
             if command -v jq >/dev/null 2>&1; then
               local -a packages
@@ -614,6 +617,7 @@ function _ni(){
           fi
           ;;
         run)
+          # ni run <script>
           if command -v jq >/dev/null 2>&1; then
             if [ -f "package.json" ]; then
               local -a script_entries
@@ -639,6 +643,7 @@ function _ni(){
           fi
           ;;
         exec)
+          # ni exec <command>
           if [ -d "$PWD/node_modules/.bin" ]; then
             _files -W "$PWD/node_modules/.bin" -g '*(-x)'
           else
