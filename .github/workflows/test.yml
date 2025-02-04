@@ -17,6 +17,7 @@ jobs:
         with:
           node-version: '18'
       - name: Enable corepack
+        # https://github.com/nodejs/corepack/issues/612
         run: npm install -g corepack && corepack enable
       - name: Test
         shell: zsh {0}
