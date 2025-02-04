@@ -2,15 +2,15 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 6
-  cacheKey: 8
+  version: 8
+  cacheKey: 10
 
 "envinfo@npm:^7.10.0":
   version: 7.10.0
   resolution: "envinfo@npm:7.10.0"
   bin:
     envinfo: dist/cli.js
-  checksum: 05e81a5768c42cbd5c580dc3f274db3401facadd53e9bd52e2aa49dfbb5d8b26f6181c25a6652d79618a6994185bd2b1c137673101690b147f758e4e71d42f7d
+  checksum: 10/d4db29c5a405081759c57c0e74ffa6adab09b7477ca105587252643394f13ab128ad4c8f755b15334b5f1901cef091acc76c71b695ce0f27853ebf147c882075
   languageName: node
   linkType: hard
 
@@ -18,6 +18,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "yarn-berry@workspace:."
   dependencies:
-    envinfo: ^7.10.0
+    envinfo: "npm:^7.10.0"
   languageName: unknown
   linkType: soft
