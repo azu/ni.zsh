@@ -638,6 +638,13 @@ function _ni(){
             _files
           fi
           ;;
+        exec)
+          if [ -d "$PWD/node_modules/.bin" ]; then
+            _files -W "$PWD/node_modules/.bin" -g '*(-x)'
+          else
+            _files
+          fi
+          ;;
       esac
       ;;
   esac
