@@ -574,6 +574,11 @@ function _ni(){
   local context state state_descr line
   typeset -A opt_args
 
+  if ! command -v jq >/dev/null 2>&1; then
+    _message -e "jq command is required to use ni.zsh"
+    return 1
+  fi
+
   _arguments -C \
     '1: :->cmds' \
     '*:: :->args'
@@ -606,38 +611,30 @@ function _ni(){
           # ni remove <package>
           # ni upgrade <package>
           if [ -f "package.json" ]; then
-            if command -v jq >/dev/null 2>&1; then
-              local -a packages
-              packages=(${(f)"$(cat package.json | jq -r '.dependencies // {} | to_entries | .[] | select(.key != "") | "\(.key):\(.value)"')"})
-              packages+=(${(f)"$(cat package.json | jq -r '.devDependencies // {} | to_entries | .[] | select(.key != "") | "\(.key):\(.value)"')"})
-              _describe -t packages 'packages' packages
-            else
-              _files
-            fi
+            local -a packages
+            packages=(${(f)"$(cat package.json | jq -r '.dependencies // {} | to_entries | .[] | select(.key != "") | "\(.key):\(.value)"')"})
+            packages+=(${(f)"$(cat package.json | jq -r '.devDependencies // {} | to_entries | .[] | select(.key != "") | "\(.key):\(.value)"')"})
+            _describe -t packages 'packages' packages
           fi
           ;;
         run)
           # ni run <script>
-          if command -v jq >/dev/null 2>&1; then
-            if [ -f "package.json" ]; then
-              local -a script_entries
-              local key value escaped_key
-              while IFS=$'\t' read -r key value; do
-                escaped_key=${key//:/\\:}
-                script_entries+=("$escaped_key:$value")
+          if [ -f "package.json" ]; then
+            local -a script_entries
+            local key value escaped_key
+            while IFS=$'\t' read -r key value; do
+              escaped_key=${key//:/\\:}
+              script_entries+=("$escaped_key:$value")
               done < <(cat package.json | jq -r '.scripts | to_entries | .[] | select(.key != "") | "\(.key)\t\(.value)"')
-              _describe -t scripts 'scripts' script_entries
-            elif [ -f "deno.json" ]; then
-              local -a task_entries
-              local key value escaped_key
-              while IFS=$'\t' read -r key value; do
-                escaped_key=${key//:/\\:}
-                task_entries+=("$escaped_key:$value")
-              done < <(cat deno.json | jq -r '.tasks | to_entries | .[] | select(.key != "") | "\(.key)\t\(.value)"')
-              _describe -t tasks 'tasks' task_entries
-            else
-              _files
-            fi
+            _describe -t scripts 'scripts' script_entries
+          elif [ -f "deno.json" ]; then
+            local -a task_entries
+            local key value escaped_key
+            while IFS=$'\t' read -r key value; do
+              escaped_key=${key//:/\\:}
+              task_entries+=("$escaped_key:$value")
+            done < <(cat deno.json | jq -r '.tasks | to_entries | .[] | select(.key != "") | "\(.key)\t\(.value)"')
+            _describe -t tasks 'tasks' task_entries
           else
             _files
           fi
