@@ -54,6 +54,7 @@ source /path/to/ni.zsh
 - [yarn-berry](https://yarnpkg.com/) (yarn v2+)
 - [pnpm](https://pnpm.js.org/)
 - [bun](https://bun.sh/)
+- [deno](https://deno.com/)
 
 ## Requirements
 
@@ -85,8 +86,8 @@ ni dlx <pkg>            -- download package and execute command
 | `ni remove <pkg>`        | `npm uninstall`   | `yarn remove`              | `yarn remove`              | `pnpm remove`    | `bun remove`   | `deno uninstall` |
 | `ni run <script>`        | `npm run`         | `yarn run`                 | `yarn run`                 | `pnpm run`       | `bun run`      | `deno run` |
 | `ni test`                | `npm run test`    | `yarn run test`            | `yarn run test`            | `pnpm run test`  | `bun run test` | `deno run test` |
-| `ni upgrade`             | `npm upgrade`     | `yarn upgrade`             | `yarn up`                  | `pnpm update`    | `bun update`              | ○              |
-| `ni upgrade-interactive` | `npm-check`**^1** | `yarn up --interactive "*"` | `yarn upgrade-interactive` | `pnpm update -i` | ○              | ○              |
+| `ni upgrade`             | `npm upgrade`     | `yarn upgrade`             | `yarn up`                  | `pnpm update`    | `bun update`              | `deno outdated --update` |
+| `ni upgrade-interactive` | `npm-check`**^1** | `yarn up --interactive "*"` | `yarn upgrade-interactive` | `pnpm update -i` | ○              | `deno outdated --update --interactive` |
 | `ni exec <command>`      | `npm exec --no`   | `yarn <command>`           | `yarn exec`                | `pnpm exec`      | `bunx`         | ○             |
 | `ni dlx <pkg>`       | `npx`             | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         | ○             |
 
