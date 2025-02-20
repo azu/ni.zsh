@@ -407,12 +407,12 @@ function ni-run(){
 }
 
 # ni upgrade - upgrade package
-## (not available for bun)
 ## npm upgrade
 ## yarn upgrade (Yarn 1)
 ## yarn up (Yarn Berry)
 ## pnpm update
-## [ ] deno
+## bun update
+## deno outdated --update
 function ni-upgrade(){
   local manager
   manager=$(ni-getPackageManager)
@@ -435,7 +435,7 @@ function ni-upgrade(){
       ni-echoRun bun update $packageName
       ;;
     deno)
-      echo "deno does not support upgrade command"
+      ni-echoRun deno outdated --update $packageName
       ;;
   esac
 }
@@ -462,7 +462,8 @@ function ni-upgrade-interactive(){
       echo "bun does not support upgrade interactive command"
       ;;
     deno)
-      echo "deno does not support upgrade interactive command"
+      # https://github.com/denoland/deno/releases/tag/v2.2.0
+      ni-echoRun deno outdated --update --interactive --latest
       ;;
   esac
 }
