@@ -281,7 +281,8 @@ function ni() {
       ni-echoRun bun install
       ;;
     deno)
-      ni-echoRun deno install
+      # Deno doesn't require explicit install command
+      return 0
       ;;
   esac
 }
