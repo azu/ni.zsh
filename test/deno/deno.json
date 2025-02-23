@@ -1,9 +1,10 @@
 {
   "tasks": {
-    "test": "deno test",
+    "test": "deno test test.ts",
     "main": "deno run main.ts"
   },
   "imports": {
-    "std/": "https://deno.land/std@0.214.0/"
+    "std/": "https://deno.land/std@0.214.0/",
+    "chalk": "npm:chalk@5.3.0"
   }
 }

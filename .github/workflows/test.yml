@@ -37,15 +37,24 @@ jobs:
           cd test/${{ matrix.package-manager }}
           # Install dependencies
           ni
-          # run tests
-          ni test
-          # run scripts
-          ni run main
-          if [ "${{ matrix.package-manager }}" != "deno" ]; then
-            # exec envinfo
+          # Test package management commands
+          if [ "${{ matrix.package-manager }}" = "deno" ]; then
+            # Add a new JSR package
+            ni add jsr:@std/path
+            # Add a new npm package
+            ni add npm:lodash
+            # Run tests
+            ni test
+            # Run main script
+            ni run main
+            # Check for updates
+            ni upgrade
+            # Remove packages
+            ni remove npm:lodash
+          else
+            ni test
+            ni run main
             ni exec envinfo
-            # add new dependencies
             ni add lodash
-            # remove dependencies
             ni remove lodash
           fi
