@@ -20,7 +20,7 @@ jobs:
         if: matrix.package-manager == 'deno'
         uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
+          deno-version: 'latest'
       - name: Enable corepack
         # https://github.com/nodejs/corepack/issues/612
         if: matrix.package-manager != 'deno'
