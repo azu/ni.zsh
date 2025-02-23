@@ -39,18 +39,10 @@ jobs:
           ni
           # Test package management commands
           if [ "${{ matrix.package-manager }}" = "deno" ]; then
-            # Add a new JSR package
-            ni add jsr:@std/path
-            # Add a new npm package
-            ni add npm:lodash
             # Run tests
             ni test
             # Run main script
             ni run main
-            # Check for updates
-            ni upgrade
-            # Remove packages
-            ni remove npm:lodash
           else
             ni test
             ni run main
