@@ -43,6 +43,9 @@ jobs:
             ni test
             # Run main script
             ni run main
+            # Test package management
+            ni add npm:lodash
+            ni remove npm:lodash
           else
             ni test
             ni run main
