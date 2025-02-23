@@ -7,7 +7,7 @@ jobs:
     name: Test ${{ matrix.package-manager }} on macos-latest
     strategy:
       matrix:
-        package-manager: [ "npm", "yarn", "yarn-berry", "pnpm" ]
+        package-manager: [ "npm", "yarn", "yarn-berry", "pnpm", "deno" ]
     # zsh is pre-installed on macos-latest
     # https://github.com/actions/runner-images/issues/264
     runs-on: macos-latest
@@ -16,8 +16,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
+      - name: Setup Deno
+        if: matrix.package-manager == 'deno'
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: '2.x'
       - name: Enable corepack
         # https://github.com/nodejs/corepack/issues/612
+        if: matrix.package-manager != 'deno'
         run: npm install -g corepack && corepack enable
       - name: Test
         shell: zsh {0}
@@ -29,15 +35,23 @@ jobs:
           source ./ni.zsh
           # move to test dir
           cd test/${{ matrix.package-manager }}
+          
           # Install dependencies
-          ni
-          # run tests
-          ni test
-          # run scripts
-          ni run main
-          # exec envinfo
-          ni exec envinfo
-          # add new dependencies
-          ni add lodash
-          # remove dependencies
-          ni remove lodash
+          if [ "${{ matrix.package-manager }}" = "deno" ]; then
+            # Add dependencies first
+            ni add jsr:@std/path@0.220.1
+            ni add npm:chalk@5.3.0
+            # Run tests and scripts
+            ni test
+            ni run main
+            # Remove packages
+            ni remove npm:chalk
+            ni remove jsr:@std/path
+          else
+            ni
+            ni test
+            ni run main
+            ni exec envinfo
+            ni add lodash
+            ni remove lodash
+          fi

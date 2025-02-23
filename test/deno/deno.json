@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "test": "deno test test.ts",
+    "main": "deno run main.ts"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@0.220.1"
+  }
+}
