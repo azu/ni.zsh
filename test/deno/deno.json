@@ -1,6 +1,10 @@
 {
   "tasks": {
-    "test": "echo 'run test'",
-    "main": "echo 'run main'"
+    "test": "deno test test.ts",
+    "main": "deno run main.ts"
+  },
+  "imports": {
+    "std/": "jsr:@std/",
+    "chalk": "npm:chalk@5.3.0"
   }
 }
