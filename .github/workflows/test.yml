@@ -35,8 +35,7 @@ jobs:
           source ./ni.zsh
           # move to test dir
           cd test/${{ matrix.package-manager }}
-          # Install dependencies
-          ni
+          
           # Install dependencies
           ni
           
@@ -47,7 +46,7 @@ jobs:
           # Package management commands
           if [ "${{ matrix.package-manager }}" = "deno" ]; then
             # Test both JSR and npm package formats
-            ni add jsr:@std/path
+            ni add jsr:@std/path@0.220.1
             ni add npm:chalk@5.3.0
             ni remove npm:chalk
             ni remove jsr:@std/path
