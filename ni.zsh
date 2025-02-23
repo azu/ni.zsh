@@ -39,8 +39,8 @@ function ni-getPackageManager() {
     fi
   fi
 
-  # detect package manager via lock file
-  if [ -f "${cwd}/deno.lock" ]; then
+  # detect package manager via lock file or config file
+  if [ -f "${cwd}/deno.lock" ] || [ -f "${cwd}/deno.json" ]; then
     echo "deno"
   elif [ -f "${cwd}/pnpm-lock.yaml" ]; then
     echo "pnpm"
