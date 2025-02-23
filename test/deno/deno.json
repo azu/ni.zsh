@@ -1,6 +1,9 @@
 {
   "tasks": {
-    "test": "echo 'run test'",
-    "main": "echo 'run main'"
+    "test": "deno test",
+    "main": "deno run main.ts"
+  },
+  "imports": {
+    "std/": "https://deno.land/std@0.214.0/"
   }
 }
