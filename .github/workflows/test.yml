@@ -20,7 +20,7 @@ jobs:
         if: matrix.package-manager == 'deno'
         uses: denoland/setup-deno@v1
         with:
-          deno-version: 'v2.x'
+          deno-version: '2.x'
       - name: Enable corepack
         # https://github.com/nodejs/corepack/issues/612
         if: matrix.package-manager != 'deno'
@@ -38,12 +38,13 @@ jobs:
           
           # Install dependencies
           if [ "${{ matrix.package-manager }}" = "deno" ]; then
+            # Add dependencies first
+            ni add jsr:@std/path@0.220.1
+            ni add npm:chalk@5.3.0
             # Run tests and scripts
             ni test
             ni run main
-            # Test package management with both JSR and npm packages
-            ni add jsr:@std/path@0.220.1
-            ni add npm:chalk@5.3.0
+            # Remove packages
             ni remove npm:chalk
             ni remove jsr:@std/path
           else
