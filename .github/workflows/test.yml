@@ -37,18 +37,21 @@ jobs:
           cd test/${{ matrix.package-manager }}
           # Install dependencies
           ni
-          # Test package management commands
+          # Install dependencies
+          ni
+          
+          # Run tests and scripts
+          ni test
+          ni run main
+          
+          # Package management commands
           if [ "${{ matrix.package-manager }}" = "deno" ]; then
-            # Run tests
-            ni test
-            # Run main script
-            ni run main
-            # Test package management
-            ni add npm:lodash
-            ni remove npm:lodash
+            # Test both JSR and npm package formats
+            ni add jsr:@std/path
+            ni add npm:chalk@5.3.0
+            ni remove npm:chalk
+            ni remove jsr:@std/path
           else
-            ni test
-            ni run main
             ni exec envinfo
             ni add lodash
             ni remove lodash
