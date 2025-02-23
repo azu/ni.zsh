@@ -281,7 +281,7 @@ function ni() {
       ni-echoRun bun install
       ;;
     deno)
-      ni-echoRun deno add
+      ni-echoRun deno install
       ;;
   esac
 }
