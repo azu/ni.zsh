@@ -54,7 +54,7 @@ source /path/to/ni.zsh
 - [yarn-berry](https://yarnpkg.com/) (yarn v2+)
 - [pnpm](https://pnpm.js.org/)
 - [bun](https://bun.sh/)
-- [deno](https://deno.com/)
+- [deno](https://deno.com/) (deno v2.3+)
 
 ## Requirements
 
@@ -82,7 +82,7 @@ ni dlx <pkg>            -- download package and execute command
 | ni                       | npm               | yarn                       | yarn-berry                 | pnpm             | bun            | deno |
 |--------------------------|-------------------|----------------------------|----------------------------|------------------|----------------| ---- |
 | `ni`                     | `npm install`     | `yarn install`             | `yarn install`             | `pnpm install`   | `bun install`  | `deno install` |
-| `ni add <pkg>`           | `npm install`     | `yarn add`                 | `yarn add`                 | `pnpm add`       | `bun add`      | `deno add` |
+| `ni add <pkg>`           | `npm install`     | `yarn add`                 | `yarn add`                 | `pnpm add`       | `bun add`      | `deno add --npm` |
 | `ni remove <pkg>`        | `npm uninstall`   | `yarn remove`              | `yarn remove`              | `pnpm remove`    | `bun remove`   | `deno uninstall` |
 | `ni run <script>`        | `npm run`         | `yarn run`                 | `yarn run`                 | `pnpm run`       | `bun run`      | `deno run` |
 | `ni test`                | `npm run test`    | `yarn run test`            | `yarn run test`            | `pnpm run test`  | `bun run test` | `deno run test` |

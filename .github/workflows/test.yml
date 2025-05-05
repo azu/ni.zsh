@@ -40,12 +40,12 @@ jobs:
           if [ "${{ matrix.package-manager }}" = "deno" ]; then
             # Add dependencies first
             ni add jsr:@std/path@0.220.1
-            ni add npm:chalk@5.3.0
+            ni add chalk@5.3.0
             # Run tests and scripts
             ni test
             ni run main
             # Remove packages
-            ni remove npm:chalk
+            ni remove chalk
             ni remove jsr:@std/path
           else
             ni
