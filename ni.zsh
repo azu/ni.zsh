@@ -364,7 +364,7 @@ function ni-add() {
       ni-echoRun bun add $flag
       ;;
     deno)
-      ni-echoRun deno add $flag
+      ni-echoRun deno add --npm $flag
       ;;
   esac
 }
