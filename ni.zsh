@@ -17,9 +17,6 @@
 #
 # When enabled, all package install/add commands and npx/bunx executions
 # will be automatically protected by Socket Firewall.
-#
-# Note: When Socket Firewall is enabled, the legacy ni-assertPackageBySocket
-# function is skipped to avoid duplicate checks.
 
 # Get Socket Firewall command path
 function ni-getSocketFirewallBin() {
