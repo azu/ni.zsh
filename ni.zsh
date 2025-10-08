@@ -3,9 +3,78 @@
 # Author: @azu
 # Repository: https://github.com/azu/ni.zsh
 # Original: https://github.com/antfu/ni
+#
+# Socket Firewall Integration
+# ----------------------------
+# This script supports Socket Firewall (https://github.com/SocketDev/sfw-free)
+# for proactive protection against malicious packages.
+#
+# Setup:
+#   1. Install Socket Firewall: npm i -g sfw
+#   2. Enable in ni.zsh: export NI_USE_SOCKET_FIREWALL=1
+#   3. Specify sfw path: export NI_SOCKET_FIREWALL_BIN=/path/to/sfw
+#      If not set, uses 'sfw' command from PATH
+#
+# When enabled, all package install/add commands and npx/bunx executions
+# will be automatically protected by Socket Firewall.
+
+# Get Socket Firewall command path
+function ni-getSocketFirewallBin() {
+  # Use custom path if specified, otherwise use 'sfw' command
+  echo "${NI_SOCKET_FIREWALL_BIN:-sfw}"
+}
+
+# Check if Socket Firewall (sfw) should be used
+# Enabled by setting NI_USE_SOCKET_FIREWALL=1
+# Requires: sfw command (npm i -g sfw) or NI_SOCKET_FIREWALL_BIN set
+function ni-shouldUseSocketFirewall() {
+  # Check if Socket Firewall is enabled via environment variable
+  if [ -z "$NI_USE_SOCKET_FIREWALL" ]; then
+    return 1
+  fi
+
+  local sfwBin
+  sfwBin=$(ni-getSocketFirewallBin)
+
+  # Check if sfw command/path is available
+  if ! command -v "$sfwBin" >/dev/null 2>&1; then
+    return 1
+  fi
+  return 0
+}
+
 function ni-echoRun() {
-  echo "$ $@"
-  eval "$@"
+  local cmd="$1"
+  shift
+  local args="$@"
+
+  # Check if Socket Firewall should be used for package installation commands
+  # sfw supports: npm, yarn, pnpm, bun (and pip, cargo for other ecosystems)
+  if ni-shouldUseSocketFirewall; then
+    local sfwBin
+    sfwBin=$(ni-getSocketFirewallBin)
+
+    case $cmd in
+      npm|yarn|pnpm|bun|deno)
+        # Check if this is an install/add command
+        if [[ "$args" =~ ^(install|add|i) ]]; then
+          echo "$ sfw $cmd $args"
+          eval "$sfwBin $cmd $args"
+          return
+        fi
+        ;;
+      npx|bunx)
+        # npx and bunx commands should also use sfw
+        echo "$ sfw $cmd $args"
+        eval "$sfwBin $cmd $args"
+        return
+        ;;
+    esac
+  fi
+
+  # Default behavior without Socket Firewall
+  echo "$ $cmd $args"
+  eval "$cmd $args"
 }
 
 # Support package manager
@@ -77,140 +146,6 @@ function ni-getPackageManager() {
       echo "$ret"
       return
     fi
-  fi
-}
-
-# Require: NI_SOCKETDEV_TOKEN="https://socket.dev/ token"
-# Usage:
-# ni-assertPackageBySocket "pkg"
-# ni-assertPackageBySocket "pkg@version"
-function ni-assertPackageBySocket() {
-  # If NI_SOCKETDEV_TOKEN is not set, then skip
-  if [ -z "$NI_SOCKETDEV_TOKEN" ]; then
-    return
-  fi
-
-  # get package name from input string
-  # if `pkg@version` -> `pkg`
-  # if `@score/pkg@version` -> `@scope/pkg`
-  # if `pkg` -> `pkg`
-  function getPackageName() {
-    # If input string does not contain '@', return it as is
-    if [[ "$1" != *"@"* ]]; then
-      echo "$1"
-      return
-    fi
-    # If input string starts with '@', extract package name after the second '@'
-    if [[ "$1" == "@"* ]]; then
-      echo "@$(echo "$1" | cut -d "@" -f 2)"
-      return
-    fi
-    # If input string contains '@', extract package name before the '@'
-    echo "${1%%@*}"
-  }
-  # get package version from input string
-  # if `pkg@version` -> `version`
-  # if `@score/pkg@version`-> `version`
-  # if `@score/pkg`-> `latest`
-  # if `pkg` -> `latest`
-  function getPackageVersion() {
-    # If input string does not contain '@', return 'latest'
-    if [[ "$1" != *"@"* ]]; then
-      echo "latest"
-      return
-    fi
-    # If input string starts with '@', extract package version after the third '@'
-    if [[ "$1" == "@"*"@"* ]]; then
-      echo "$(echo "$1" | cut -d "@" -f 3)"
-      return
-    fi
-      # If input string starts with '@', but does not contain '@<version', return 'latest'
-    if [[ "$1" == "@"* ]]; then
-      echo "latest"
-      return
-    fi
-    # If input string contains '@', extract package version after the last '@'
-    echo "$(echo "$1" | rev | cut -d "@" -f 1 | rev)"
-  }
-
-  local pkg
-  local version
-  pkg=$(getPackageName "$1")
-  version=$(getPackageVersion "$1")
-  # if version is latest, then get version from npm
-  if [ "$version" = "latest" ]; then
-    viewVersion=$(npm view "$pkg" version --json)
-    # if error response, then exit
-    if [ $? -ne 0 ]; then
-      echo "Error: $pkg is not found"
-      return 1
-    fi
-    version=$(echo "${viewVersion}" | jq -r .)
-  fi
-  # check package score using Socket API
-  # https://docs.socket.dev/reference/getscorebynpmpackage
-  local bearerToken # it is base64 encoded of "$NI_SCOCKET_TOKEN:"
-  bearerToken=$(echo -n "$NI_SOCKETDEV_TOKEN:" | base64)
-  local score
-  score=$(curl -s --request GET \
-    --url "https://api.socket.dev/v0/npm/${pkg}/${version}/score" \
-    --header 'accept: application/json' \
-    --header "authorization: Basic ${bearerToken}" | jq -r .supplyChainRisk.score)
-  # dump package score: higher is better
-  # score <= 0.3, dump with red color and confirm
-  # score <= 0.5, dump with yellow color and confirm
-  # score is other, dump with green color
-  if [ $(echo "$score <= 0.3" | bc -l) -eq 1 ]; then
-    echo -e "🔥 \033[33m$pkg@$version is not safe\033[0m"
-    echo "🔥 Score: $score"
-    echo "🔗 https://socket.dev/npm/package/${pkg}/overview/${version}"
-    echo "This package have some risk."
-    echo "Fetching risk information from Socket.dev..."
-
-    local riskMessage;
-    riskMessage=$(curl -s --request GET \
-    --url "https://api.socket.dev/v0/npm/${pkg}/${version}/issues" \
-    --header 'accept: application/json' \
-    --header "authorization: Basic ${bearerToken}" \
-    | jq -r '[.[] | select(.value.category == "supplyChainRisk") | {severity: .value.severity, type: .type}] | sort_by(.severity) | map("* [\(.severity)] \(.type) - https://socket.dev/npm/issue/\(.type)") | unique | join("\n")')
-    # jq filter is following logic
-    # ```js
-    # const message = test.filter((item) => {
-    #   return item.value.category === "supplyChainRisk";
-    # }).sort((a, b) => {
-    #   // sort by severity
-    #   // order: critical, high, middle, low
-    #   const orders = ["critical", "high", "middle", "low"];
-    #   return orders.indexOf(a.value.severity) - orders.indexOf(b.value.severity);
-    # }).map((item) => {
-    #   // [value.severity] [type] - https://socket.dev/npm/issue/${type}
-    #   return `* ${item.value.severity} ${item.type} - https://socket.dev/npm/issue/${item.type}`;
-    # }).filter((item, array) => {
-    #   // remove duplicated
-    #   return array.indexOf(item) === array.lastIndexOf(item);
-    # });
-    # ```
-    echo -e "\033[31m$riskMessage\033[0m"
-    # show
-    echo "Are you sure to install this package?[y/N]"
-    read yn
-    if [ "$yn" != "y" ]; then
-      return 1
-    fi
-  elif [ $(echo "$score <= 0.5" | bc -l) -eq 1 ]; then
-    echo -e "🟡 \033[33m$pkg@$version is not safe\033[0m"
-    echo "🟡 Score: $score"
-    echo "🔗 https://socket.dev/npm/package/${pkg}/overview/${version}"
-    echo "This package may have some risk."
-    echo "Are you sure to install this package?[y/N]"
-    read yn
-    if [ "$yn" != "y" ]; then
-      return 1
-    fi
-  else
-    echo -e "🟢 \033[32m$pkg@$version is safe\033[0m"
-    echo "🟢 Score: $score"
-    echo "🔗 https://socket.dev/npm/package/${pkg}/overview/${version}"
   fi
 }
 
@@ -316,11 +251,6 @@ function ni-add() {
         ;;
     esac
   done
-  # check package score
-  ni-assertPackageBySocket "${POSITIONAL_ARGS[1]}"
-  if [[ $? -eq 1 ]]; then
-    return 1
-  fi
 
   local manager
   manager=$(ni-getPackageManager)
@@ -538,12 +468,6 @@ function ni-exec(){
 ## bunx envinfo
 ## [ ] deno
 function ni-dlx(){
-  # check package score
-  ni-assertPackageBySocket "$1"
-  if [[ $? -eq 1 ]]; then
-    return 1
-  fi
-
   local manager
   manager=$(ni-getPackageManager)
   case $manager in

@@ -109,26 +109,33 @@ ni <TAB>
 
 ### Supply chain risk detections
 
-You can integrate https://socket.dev/ to detect supply chain attacks.
+You can integrate [Socket Firewall](https://socket.dev/blog/introducing-socket-firewall) to detect supply chain attacks.
 
-![Socket.dev Integration](./socket-integration.jpg)
+Socket Firewall provides proactive protection against malicious packages by scanning all package installations and executions in real-time.
 
-https://github.com/azu/ni.zsh/assets/19714/d6251e40-043f-4450-b9f2-716a712ae71b
+**Setup:**
 
+1. Install Socket Firewall globally:
+   ```sh
+   npm i -g sfw
+   ```
 
-If `NI_SOCKETDEV_TOKEN` is set, `ni add` will check the package is safe or not before installing.
+2. Enable Socket Firewall in ni.zsh:
+   ```sh
+   export NI_USE_SOCKET_FIREWALL=1
+   ```
 
-```
-export NI_SOCKETDEV_TOKEN="<socket-token>"
-```
+3. (Optional) Specify custom sfw binary path:
+   ```sh
+   export NI_SOCKET_FIREWALL_BIN=/path/to/sfw
+   ```
+   If not set, uses `sfw` command from PATH.
 
-**How to get socket.dev token?**
+**Protected commands:**
 
-1. Go to https://socket.dev/
-2. Sign up
-3. Create a project
-4. Visit `https://socket.dev/dashboard/org/gh/{user}/settings/api-tokens`
-5. Copy token
+When Socket Firewall is enabled, the following commands are automatically protected:
+- `ni add` / `ni` - Package installation
+- `ni exec` / `ni dlx` - Package execution (`npx`, `bunx`)
 
 
 ## License
