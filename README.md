@@ -111,6 +111,8 @@ ni <TAB>
 
 You can integrate [Socket Firewall](https://socket.dev/blog/introducing-socket-firewall) to detect supply chain attacks.
 
+https://github.com/user-attachments/assets/b3b6fc24-ec80-4bd3-a699-7562d503f7b1
+
 Socket Firewall provides proactive protection against malicious packages by scanning all package installations and executions in real-time.
 
 **Setup:**
