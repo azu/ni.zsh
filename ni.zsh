@@ -466,7 +466,7 @@ function ni-exec(){
 ## yarn dlx envinfo
 ## pnpm dlx envinfo
 ## bunx envinfo
-## [ ] deno
+## deno x envinfo
 function ni-dlx(){
   local manager
   manager=$(ni-getPackageManager)
@@ -488,7 +488,7 @@ function ni-dlx(){
       ni-echoRun bunx $@
       ;;
     deno)
-      echo "deno does not support dlx command"
+      ni-echoRun deno x $@
       ;;
   esac
 }
