@@ -54,7 +54,7 @@ source /path/to/ni.zsh
 - [yarn-berry](https://yarnpkg.com/) (yarn v2+)
 - [pnpm](https://pnpm.js.org/)
 - [bun](https://bun.sh/)
-- [deno](https://deno.com/) (deno v2.3+)
+- [deno](https://deno.com/) (deno v2.6+)
 
 ## Requirements
 
@@ -89,7 +89,7 @@ ni dlx <pkg>            -- download package and execute command
 | `ni upgrade`             | `npm upgrade`     | `yarn upgrade`             | `yarn up`                  | `pnpm update`    | `bun update`              | `deno outdated --update` |
 | `ni upgrade-interactive` | `npm-check`**^1** | `yarn up --interactive "*"` | `yarn upgrade-interactive` | `pnpm update -i` | ○              | `deno outdated --update --interactive` |
 | `ni exec <command>`      | `npm exec --no`   | `yarn <command>`           | `yarn exec`                | `pnpm exec`      | `bunx`         | ○             |
-| `ni dlx <pkg>`       | `npx`             | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         | ○             |
+| `ni dlx <pkg>`       | `npx`             | `npx`                      | `yarn dlx`                 | `pnpm dlx`       | `bunx`         | `deno x`      |
 
 - **^1**: require [npm-check](https://github.com/dylang/npm-check) globally.
 
