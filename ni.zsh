@@ -193,6 +193,10 @@ function ni() {
         shift
         ni-dlx $@
         ;;
+      ci)
+        shift
+        ni-ci $@
+        ;;
       *)
         echo "Unknown subcommand: $1"
         ;;
@@ -432,7 +436,7 @@ function ni-remove(){
 ## yarn exec envinfo
 ## pnpm exec envinfo
 ## bunx envinfo
-## [ ] deno 
+## [ ] deno
 function ni-exec(){
   local manager
   manager=$(ni-getPackageManager)
@@ -493,6 +497,39 @@ function ni-dlx(){
   esac
 }
 
+# ni ci - install with frozen lockfile (equivalent to npm ci)
+# $ ni ci
+## npm ci
+## yarn install --frozen-lockfile (Yarn 1)
+## yarn install --immutable (Yarn Berry)
+## pnpm install --frozen-lockfile
+## bun install --frozen-lockfile
+## deno install --frozen
+function ni-ci(){
+  local manager
+  manager=$(ni-getPackageManager)
+  case $manager in
+    npm)
+      ni-echoRun npm ci
+      ;;
+    yarn)
+      ni-echoRun yarn install --frozen-lockfile
+      ;;
+    yarn-berry)
+      ni-echoRun yarn install --immutable
+      ;;
+    pnpm)
+      ni-echoRun pnpm install --frozen-lockfile
+      ;;
+    bun)
+      ni-echoRun bun install --frozen-lockfile
+      ;;
+    deno)
+      ni-echoRun deno install --frozen
+      ;;
+  esac
+}
+
 
 # auto completion
 function _ni(){
@@ -521,6 +558,7 @@ function _ni(){
         'remove:remove package'
         'exec:execute command'
         'dlx:download package and execute command'
+        'ci:install with frozen lockfile'
       )
       _describe -t subcommands 'subcommands' subcommands
       ;;
