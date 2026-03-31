@@ -38,6 +38,8 @@ function ni-shouldUseSocketFirewall() {
 
   # Check if sfw command/path is available
   if ! command -v "$sfwBin" >/dev/null 2>&1; then
+    echo "Error: NI_USE_SOCKET_FIREWALL is set but '$sfwBin' command not found." >&2
+    echo "Install Socket Firewall: npm i -g sfw" >&2
     return 1
   fi
   return 0
@@ -50,6 +52,9 @@ function ni-echoRun() {
 
   # Check if Socket Firewall should be used for package installation commands
   # sfw supports: npm, yarn, pnpm, bun (and pip, cargo for other ecosystems)
+  if [ -n "$NI_USE_SOCKET_FIREWALL" ] && ! ni-shouldUseSocketFirewall; then
+    return 1
+  fi
   if ni-shouldUseSocketFirewall; then
     local sfwBin
     sfwBin=$(ni-getSocketFirewallBin)
@@ -192,10 +197,6 @@ function ni() {
       dlx)
         shift
         ni-dlx $@
-        ;;
-      ci)
-        shift
-        ni-ci $@
         ;;
       *)
         echo "Unknown subcommand: $1"
@@ -436,7 +437,7 @@ function ni-remove(){
 ## yarn exec envinfo
 ## pnpm exec envinfo
 ## bunx envinfo
-## [ ] deno
+## [ ] deno 
 function ni-exec(){
   local manager
   manager=$(ni-getPackageManager)
@@ -470,7 +471,7 @@ function ni-exec(){
 ## yarn dlx envinfo
 ## pnpm dlx envinfo
 ## bunx envinfo
-## deno x envinfo
+## [ ] deno
 function ni-dlx(){
   local manager
   manager=$(ni-getPackageManager)
@@ -492,40 +493,7 @@ function ni-dlx(){
       ni-echoRun bunx $@
       ;;
     deno)
-      ni-echoRun deno x $@
-      ;;
-  esac
-}
-
-# ni ci - install with frozen lockfile (equivalent to npm ci)
-# $ ni ci
-## npm ci
-## yarn install --frozen-lockfile (Yarn 1)
-## yarn install --immutable (Yarn Berry)
-## pnpm install --frozen-lockfile
-## bun install --frozen-lockfile
-## deno install --frozen
-function ni-ci(){
-  local manager
-  manager=$(ni-getPackageManager)
-  case $manager in
-    npm)
-      ni-echoRun npm ci
-      ;;
-    yarn)
-      ni-echoRun yarn install --frozen-lockfile
-      ;;
-    yarn-berry)
-      ni-echoRun yarn install --immutable
-      ;;
-    pnpm)
-      ni-echoRun pnpm install --frozen-lockfile
-      ;;
-    bun)
-      ni-echoRun bun install --frozen-lockfile
-      ;;
-    deno)
-      ni-echoRun deno install --frozen
+      echo "deno does not support dlx command"
       ;;
   esac
 }
@@ -558,7 +526,6 @@ function _ni(){
         'remove:remove package'
         'exec:execute command'
         'dlx:download package and execute command'
-        'ci:install with frozen lockfile'
       )
       _describe -t subcommands 'subcommands' subcommands
       ;;
