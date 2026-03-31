@@ -38,6 +38,8 @@ function ni-shouldUseSocketFirewall() {
 
   # Check if sfw command/path is available
   if ! command -v "$sfwBin" >/dev/null 2>&1; then
+    echo "Error: NI_USE_SOCKET_FIREWALL is set but '$sfwBin' command not found." >&2
+    echo "Install Socket Firewall: npm i -g sfw" >&2
     return 1
   fi
   return 0
@@ -50,6 +52,9 @@ function ni-echoRun() {
 
   # Check if Socket Firewall should be used for package installation commands
   # sfw supports: npm, yarn, pnpm, bun (and pip, cargo for other ecosystems)
+  if [ -n "$NI_USE_SOCKET_FIREWALL" ] && ! ni-shouldUseSocketFirewall; then
+    return 1
+  fi
   if ni-shouldUseSocketFirewall; then
     local sfwBin
     sfwBin=$(ni-getSocketFirewallBin)
