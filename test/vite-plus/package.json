@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "name": "vite-plus",
+  "scripts": {
+    "test": "echo 'run test'",
+    "main": "echo 'run main'"
+  },
+  "devDependencies": {
+    "envinfo": "^7.10.0",
+    "vite-plus": "^0.2.2"
+  },
+  "packageManager": "pnpm@11.10.0"
+}

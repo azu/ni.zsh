@@ -55,6 +55,10 @@ source /path/to/ni.zsh
 - [pnpm](https://pnpm.js.org/)
 - [bun](https://bun.sh/)
 - [deno](https://deno.com/) (deno v2.6+)
+- [vite-plus](https://viteplus.dev/) (`vp`)
+
+Vite+ is detected when `package.json` has `vite-plus` in `devDependencies` or `dependencies`.
+This detection runs before the `packageManager` field, so Vite+ projects that delegate to pnpm/npm/Yarn/Bun still use `vp`.
 
 ## Requirements
 
@@ -80,18 +84,18 @@ ni dlx <pkg>            -- download package and execute command
 
 ## Command Table
 
-| ni                       | npm                              | yarn                             | yarn-berry                 | pnpm                             | bun                                | deno                                   |
-|--------------------------|----------------------------------|----------------------------------|----------------------------|----------------------------------|------------------------------------|----------------------------------------|
-| `ni`                     | `npm install`                    | `yarn install`                   | `yarn install`             | `pnpm install`                   | `bun install`                      | `deno install`                         |
-| `ni ci`                  | `npm ci`                         | `yarn install --frozen-lockfile` | `yarn install --immutable` | `pnpm install --frozen-lockfile` | `bun install --frozen-lockfile`    | `deno install --frozen`                |
-| `ni add <pkg>`           | `npm install`                    | `yarn add`                       | `yarn add`                 | `pnpm add`                       | `bun add`                          | `deno add --npm`                       |
-| `ni remove <pkg>`        | `npm uninstall`                  | `yarn remove`                    | `yarn remove`              | `pnpm remove`                    | `bun remove`                       | `deno uninstall`                       |
-| `ni run <script>`        | `npm run`                        | `yarn run`                       | `yarn run`                 | `pnpm run`                       | `bun run`                          | `deno run`                             |
-| `ni test`                | `npm run test`                   | `yarn run test`                  | `yarn run test`            | `pnpm run test`                  | `bun run test`                     | `deno run test`                        |
-| `ni upgrade`             | `npm upgrade`                    | `yarn upgrade`                   | `yarn up`                  | `pnpm update`                    | `bun update`                       | `deno outdated --update`               |
-| `ni upgrade-interactive` | `npm-check`**^1**                | `yarn up --interactive "*"`      | `yarn upgrade-interactive` | `pnpm update -i`                 | ○                                  | `deno outdated --update --interactive` |
-| `ni exec <command>`      | `npm exec --no`                  | `yarn <command>`                 | `yarn exec`                | `pnpm exec`                      | `bunx`                             | ○                                      |
-| `ni dlx <pkg>`           | `npx`                            | `npx`                            | `yarn dlx`                 | `pnpm dlx`                       | `bunx`                             | `deno x`                               |
+| ni                       | npm                              | yarn                             | yarn-berry                 | pnpm                             | bun                                | deno                                   | vite-plus                       |
+|--------------------------|----------------------------------|----------------------------------|----------------------------|----------------------------------|------------------------------------|----------------------------------------|---------------------------------|
+| `ni`                     | `npm install`                    | `yarn install`                   | `yarn install`             | `pnpm install`                   | `bun install`                      | `deno install`                         | `vp install`                    |
+| `ni ci`                  | `npm ci`                         | `yarn install --frozen-lockfile` | `yarn install --immutable` | `pnpm install --frozen-lockfile` | `bun install --frozen-lockfile`    | `deno install --frozen`                | `vp install --frozen-lockfile`  |
+| `ni add <pkg>`           | `npm install`                    | `yarn add`                       | `yarn add`                 | `pnpm add`                       | `bun add`                          | `deno add --npm`                       | `vp add`                        |
+| `ni remove <pkg>`        | `npm uninstall`                  | `yarn remove`                    | `yarn remove`              | `pnpm remove`                    | `bun remove`                       | `deno uninstall`                       | `vp remove`                     |
+| `ni run <script>`        | `npm run`                        | `yarn run`                       | `yarn run`                 | `pnpm run`                       | `bun run`                          | `deno run`                             | `vp run`                        |
+| `ni test`                | `npm run test`                   | `yarn run test`                  | `yarn run test`            | `pnpm run test`                  | `bun run test`                     | `deno run test`                        | `vp run test`                   |
+| `ni upgrade`             | `npm upgrade`                    | `yarn upgrade`                   | `yarn up`                  | `pnpm update`                    | `bun update`                       | `deno outdated --update`               | `vp update`                     |
+| `ni upgrade-interactive` | `npm-check`**^1**                | `yarn up --interactive "*"`      | `yarn upgrade-interactive` | `pnpm update -i`                 | ○                                  | `deno outdated --update --interactive` | `vp update --interactive`      |
+| `ni exec <command>`      | `npm exec --no`                  | `yarn <command>`                 | `yarn exec`                | `pnpm exec`                      | `bunx`                             | ○                                      | `vp exec`                       |
+| `ni dlx <pkg>`           | `npx`                            | `npx`                            | `yarn dlx`                 | `pnpm dlx`                       | `bunx`                             | `deno x`                               | `vp dlx`                        |
 
 - **^1**: require [npm-check](https://github.com/dylang/npm-check) globally.
 

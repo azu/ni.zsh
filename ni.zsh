@@ -15,8 +15,9 @@
 #   3. Specify sfw path: export NI_SOCKET_FIREWALL_BIN=/path/to/sfw
 #      If not set, uses 'sfw' command from PATH
 #
-# When enabled, all package install/add commands and npx/bunx executions
-# will be automatically protected by Socket Firewall.
+# When enabled, package install/add commands for npm/yarn/pnpm/bun/deno
+# and npx/bunx executions will be automatically protected by Socket Firewall.
+# vite-plus (vp) is not wrapped because it delegates to the underlying package manager.
 
 # Get Socket Firewall command path
 function ni-getSocketFirewallBin() {
@@ -52,6 +53,7 @@ function ni-echoRun() {
 
   # Check if Socket Firewall should be used for package installation commands
   # sfw supports: npm, yarn, pnpm, bun (and pip, cargo for other ecosystems)
+  # vp delegates to the underlying package manager; sfw wrapping is intentionally unverified.
   if [ -n "$NI_USE_SOCKET_FIREWALL" ] && ! ni-shouldUseSocketFirewall; then
     return 1
   fi
@@ -89,13 +91,18 @@ function ni-echoRun() {
 # - pnpm
 # - bun
 # - deno - v2+
+# - vite-plus
 function ni-getPackageManager() {
   # cwd is argument 1, if not set, use current directory
   local cwd=${1:-$(pwd)}
   # detect package manager via package.json
   if [ -f "${cwd}/package.json" ]; then
     local packageManager
-    packageManager=$(cat "${cwd}/package.json" | jq -r .packageManager)
+    packageManager=$(jq -r 'if ((.devDependencies // {}) + (.dependencies // {}) | has("vite-plus")) then "vite-plus" else (.packageManager // "null") end' "${cwd}/package.json")
+    if [ "$packageManager" = "vite-plus" ]; then
+      echo "vite-plus"
+      return
+    fi
     if [ "$packageManager" != "null" ]; then
       # parse packageManager name from "<pkg>@<version>"
       packageManagerName=$(echo "$packageManager" | sed -e 's/@.*//')
@@ -227,6 +234,9 @@ function ni() {
     deno)
       ni-echoRun deno install
       ;;
+    vite-plus)
+      ni-echoRun vp install
+      ;;
   esac
 }
 
@@ -275,7 +285,7 @@ function ni-add() {
         yarn*)
           flag="$POSITIONAL_ARGS --dev"
           ;;
-        pnpm)
+        pnpm|vite-plus)
           flag="$POSITIONAL_ARGS -D"
           ;;
         bun)
@@ -304,6 +314,9 @@ function ni-add() {
       ;;
     deno)
       ni-echoRun deno add --npm $flag
+      ;;
+    vite-plus)
+      ni-echoRun vp add $flag
       ;;
   esac
 }
@@ -342,6 +355,9 @@ function ni-run(){
     deno)
       ni-echoRun deno run $@
       ;;
+    vite-plus)
+      ni-echoRun vp run $@
+      ;;
   esac
 }
 
@@ -376,6 +392,9 @@ function ni-upgrade(){
     deno)
       ni-echoRun deno outdated --update $packageName
       ;;
+    vite-plus)
+      ni-echoRun vp update $packageName
+      ;;
   esac
 }
 
@@ -404,6 +423,9 @@ function ni-upgrade-interactive(){
       # https://github.com/denoland/deno/releases/tag/v2.2.0
       ni-echoRun deno outdated --update --interactive --latest
       ;;
+    vite-plus)
+      ni-echoRun vp update --interactive
+      ;;
   esac
 }
 # ni remove - remove package
@@ -431,6 +453,9 @@ function ni-remove(){
       ;;
     deno)
       ni-echoRun deno uninstall $@
+      ;;
+    vite-plus)
+      ni-echoRun vp remove $@
       ;;
   esac
 }
@@ -466,6 +491,9 @@ function ni-exec(){
     deno)
       echo "deno does not support exec command"
       ;;
+    vite-plus)
+      ni-echoRun vp exec $@
+      ;;
   esac
 }
 
@@ -499,6 +527,9 @@ function ni-dlx(){
     deno)
       ni-echoRun deno x $@
       ;;
+    vite-plus)
+      ni-echoRun vp dlx $@
+      ;;
   esac
 }
 
@@ -531,6 +562,9 @@ function ni-ci(){
       ;;
     deno)
       ni-echoRun deno install --frozen
+      ;;
+    vite-plus)
+      ni-echoRun vp install --frozen-lockfile
       ;;
   esac
 }

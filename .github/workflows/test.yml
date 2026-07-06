@@ -7,7 +7,19 @@ jobs:
     name: Test ${{ matrix.package-manager }} on macos-latest
     strategy:
       matrix:
-        package-manager: [ "npm", "yarn", "yarn-berry", "pnpm", "deno" ]
+        include:
+          - package-manager: "npm"
+            node-version: "18"
+          - package-manager: "yarn"
+            node-version: "18"
+          - package-manager: "yarn-berry"
+            node-version: "18"
+          - package-manager: "pnpm"
+            node-version: "18"
+          - package-manager: "deno"
+            node-version: "18"
+          - package-manager: "vite-plus"
+            node-version: "24"
     # zsh is pre-installed on macos-latest
     # https://github.com/actions/runner-images/issues/264
     runs-on: macos-latest
@@ -15,7 +27,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ matrix.node-version }}
       - name: Setup Deno
         if: matrix.package-manager == 'deno'
         uses: denoland/setup-deno@v1
@@ -25,6 +37,16 @@ jobs:
         # https://github.com/nodejs/corepack/issues/612
         if: matrix.package-manager != 'deno'
         run: npm install -g corepack && corepack enable
+      - name: Setup Vite+
+        if: matrix.package-manager == 'vite-plus'
+        env:
+          VP_VERSION: "0.2.2"
+        run: |
+          curl -fsSL https://vite.plus | bash
+          echo "$HOME/.vite-plus/bin" >> "$GITHUB_PATH"
+      - name: Check Vite+ version
+        if: matrix.package-manager == 'vite-plus'
+        run: vp --version
       - name: Test
         shell: zsh {0}
         run: |
