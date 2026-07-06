@@ -9,15 +9,15 @@ jobs:
       matrix:
         include:
           - package-manager: "npm"
-            node-version: "18"
+            node-version: "24"
           - package-manager: "yarn"
-            node-version: "18"
+            node-version: "24"
           - package-manager: "yarn-berry"
-            node-version: "18"
+            node-version: "24"
           - package-manager: "pnpm"
-            node-version: "18"
+            node-version: "24"
           - package-manager: "deno"
-            node-version: "18"
+            node-version: "24"
           - package-manager: "vite-plus"
             node-version: "24"
     # zsh is pre-installed on macos-latest
