@@ -424,7 +424,7 @@ function ni-upgrade-interactive(){
       ni-echoRun deno outdated --update --interactive --latest
       ;;
     vite-plus)
-      ni-echoRun vp update --interactive
+      ni-echoRun vp update --interactive --latest
       ;;
   esac
 }
