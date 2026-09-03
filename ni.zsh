@@ -18,6 +18,7 @@
 # When enabled, package install/add commands for npm/yarn/pnpm/bun/deno
 # and npx/bunx executions will be automatically protected by Socket Firewall.
 # vite-plus (vp) is not wrapped because it delegates to the underlying package manager.
+# aube is not wrapped because Socket Firewall does not support it.
 
 # Get Socket Firewall command path
 function ni-getSocketFirewallBin() {
@@ -92,6 +93,7 @@ function ni-echoRun() {
 # - bun
 # - deno - v2+
 # - vite-plus
+# - aube
 function ni-getPackageManager() {
   # cwd is argument 1, if not set, use current directory
   local cwd=${1:-$(pwd)}
@@ -108,7 +110,7 @@ function ni-getPackageManager() {
       packageManagerName=$(echo "$packageManager" | sed -e 's/@.*//')
       packageManagerMajorVersion=$(echo "$packageManager" | sed -e 's/.*@//' | sed -e 's/\..*//')
       # supported package manager
-      if [ "$packageManagerName" = "npm" ] || [ "$packageManagerName" = "pnpm" ] || [ "$packageManagerName" = "yarn" ] || [ "$packageManagerName" = "bun" ]; then
+      if [ "$packageManagerName" = "npm" ] || [ "$packageManagerName" = "pnpm" ] || [ "$packageManagerName" = "yarn" ] || [ "$packageManagerName" = "bun" ] || [ "$packageManagerName" = "aube" ]; then
         # yarn and version >= 2, then  yarn-berry
         if [ "$packageManagerName" = "yarn" ] && [ "$packageManagerMajorVersion" -ge 2 ]; then
           echo "yarn-berry"
@@ -123,6 +125,9 @@ function ni-getPackageManager() {
   # detect package manager via lock file or config file
   if [ -f "${cwd}/deno.lock" ] || [ -f "${cwd}/deno.json" ]; then
     echo "deno"
+  elif [ -f "${cwd}/aube-lock.yaml" ]; then
+    # aube can also read/write other lockfiles in place, but only aube-lock.yaml identifies an aube project
+    echo "aube"
   elif [ -f "${cwd}/pnpm-lock.yaml" ]; then
     echo "pnpm"
   elif [ -f "${cwd}/bun.lock" ] || [ -f "${cwd}/bun.lockb" ]; then
@@ -237,6 +242,9 @@ function ni() {
     vite-plus)
       ni-echoRun vp install
       ;;
+    aube)
+      ni-echoRun aube install
+      ;;
   esac
 }
 
@@ -247,11 +255,13 @@ function ni() {
 ## pnpm add vite
 ## bun add vite
 ## deno add npm:vite
+## aube add vite
 # $ ni @types/node --dev
 ## npm install @types/node -D
 ## yarn add @types/node -D
 ## pnpm add -D @types/node
 ## bun add -d @types/node
+## aube add -D @types/node
 
 function ni-add() {
   # support both `ni add pkg --dev` and `ni add --dev pkg`
@@ -285,7 +295,7 @@ function ni-add() {
         yarn*)
           flag="$POSITIONAL_ARGS --dev"
           ;;
-        pnpm|vite-plus)
+        pnpm|vite-plus|aube)
           flag="$POSITIONAL_ARGS -D"
           ;;
         bun)
@@ -318,6 +328,9 @@ function ni-add() {
     vite-plus)
       ni-echoRun vp add $flag
       ;;
+    aube)
+      ni-echoRun aube add $flag
+      ;;
   esac
 }
 
@@ -328,6 +341,7 @@ function ni-add() {
 ## pnpm run dev --port=3000
 ## bun run dev --port=3000
 ## deno run dev --port=3000
+## aube run dev --port=3000
 function ni-run(){
   local manager
   manager=$(ni-getPackageManager)
@@ -358,6 +372,9 @@ function ni-run(){
     vite-plus)
       ni-echoRun vp run $@
       ;;
+    aube)
+      ni-echoRun aube run $@
+      ;;
   esac
 }
 
@@ -368,6 +385,7 @@ function ni-run(){
 ## pnpm update
 ## bun update
 ## deno outdated --update
+## aube update
 function ni-upgrade(){
   local manager
   manager=$(ni-getPackageManager)
@@ -394,6 +412,9 @@ function ni-upgrade(){
       ;;
     vite-plus)
       ni-echoRun vp update $packageName
+      ;;
+    aube)
+      ni-echoRun aube update $packageName
       ;;
   esac
 }
@@ -426,6 +447,9 @@ function ni-upgrade-interactive(){
     vite-plus)
       ni-echoRun vp update --interactive --latest
       ;;
+    aube)
+      echo "aube does not support upgrade interactive command"
+      ;;
   esac
 }
 # ni remove - remove package
@@ -435,6 +459,7 @@ function ni-upgrade-interactive(){
 ## pnpm remove webpack
 ## bun remove webpack
 ## deno uninstall npm:webpack
+## aube remove webpack
 function ni-remove(){
   local manager
   manager=$(ni-getPackageManager)
@@ -457,6 +482,9 @@ function ni-remove(){
     vite-plus)
       ni-echoRun vp remove $@
       ;;
+    aube)
+      ni-echoRun aube remove $@
+      ;;
   esac
 }
 
@@ -467,6 +495,7 @@ function ni-remove(){
 ## pnpm exec envinfo
 ## bunx envinfo
 ## [ ] deno 
+## aube exec envinfo
 function ni-exec(){
   local manager
   manager=$(ni-getPackageManager)
@@ -494,6 +523,9 @@ function ni-exec(){
     vite-plus)
       ni-echoRun vp exec $@
       ;;
+    aube)
+      ni-echoRun aube exec $@
+      ;;
   esac
 }
 
@@ -504,6 +536,7 @@ function ni-exec(){
 ## pnpm dlx envinfo
 ## bunx envinfo
 ## deno x envinfo
+## aube dlx envinfo
 function ni-dlx(){
   local manager
   manager=$(ni-getPackageManager)
@@ -530,6 +563,9 @@ function ni-dlx(){
     vite-plus)
       ni-echoRun vp dlx $@
       ;;
+    aube)
+      ni-echoRun aube dlx $@
+      ;;
   esac
 }
 
@@ -541,6 +577,7 @@ function ni-dlx(){
 ## pnpm install --frozen-lockfile
 ## bun install --frozen-lockfile
 ## deno install --frozen
+## aube ci
 function ni-ci(){
   local manager
   manager=$(ni-getPackageManager)
@@ -565,6 +602,9 @@ function ni-ci(){
       ;;
     vite-plus)
       ni-echoRun vp install --frozen-lockfile
+      ;;
+    aube)
+      ni-echoRun aube ci
       ;;
   esac
 }

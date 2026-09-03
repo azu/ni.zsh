@@ -20,6 +20,8 @@ jobs:
             node-version: "24"
           - package-manager: "vite-plus"
             node-version: "24"
+          - package-manager: "aube"
+            node-version: "24"
     # zsh is pre-installed on macos-latest
     # https://github.com/actions/runner-images/issues/264
     runs-on: macos-latest
@@ -47,6 +49,14 @@ jobs:
       - name: Check Vite+ version
         if: matrix.package-manager == 'vite-plus'
         run: vp --version
+      - name: Setup aube
+        if: matrix.package-manager == 'aube'
+        uses: jdx/aube-action@v1
+        with:
+          version: "2.2.4"
+      - name: Check aube version
+        if: matrix.package-manager == 'aube'
+        run: aube --version
       - name: Test
         shell: zsh {0}
         run: |

@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "aube",
+  "scripts": {
+    "test": "echo 'run test'",
+    "main": "echo 'run main'"
+  },
+  "devDependencies": {
+    "envinfo": "^7.10.0"
+  },
+  "packageManager": "aube@2.2.4"
+}

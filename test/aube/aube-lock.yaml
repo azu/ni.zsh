@@ -1,0 +1,24 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      envinfo:
+        specifier: ^7.10.0
+        version: 7.21.0
+
+packages:
+
+  envinfo@7.21.0:
+    resolution: {integrity: sha512-Lw7I8Zp5YKHFCXL7+Dz95g4CcbMEpgvqZNNq3AmlT5XAV6CgAAk6gyAMqn2zjw08K9BHfcNuKrMiCPLByGafow==}
+    engines: {node: '>=4'}
+    hasBin: true
+
+snapshots:
+
+  envinfo@7.21.0: {}
