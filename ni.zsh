@@ -48,9 +48,11 @@ function ni-shouldUseSocketFirewall() {
 }
 
 # Print and run a command.
-# Each argument is passed to the command as-is: arguments are quoted with ${(q)...}
-# before `eval`, so spaces, empty strings, `$`, `*`, and `$(...)` are not re-interpreted.
-# `eval` is still used so that user aliases (e.g. alias pnpm='pnpm --silent') keep working.
+# Each argument is passed to the command as-is: arguments are always single-quoted
+# with ${(qq)...} before `eval`, so spaces, empty strings, `$`, `*`, `$(...)`, and words
+# that match global aliases (alias -g) are not re-interpreted.
+# `eval` is still used so that user aliases on the command name
+# (e.g. alias pnpm='pnpm --silent') keep working.
 # Usage: ni-echoRun <command> [args...]
 function ni-echoRun() {
   local cmd="$1"
@@ -72,14 +74,14 @@ function ni-echoRun() {
         # Check if this is an install/add command
         if [[ "$1" =~ ^(install|add|i) ]]; then
           print -r -- "$ sfw ${(@q-)cmdline}"
-          eval "${(q)sfwBin} ${(@q)cmdline}"
+          eval "${(q)sfwBin} ${(@qq)cmdline}"
           return
         fi
         ;;
       npx|bunx)
         # npx and bunx commands should also use sfw
         print -r -- "$ sfw ${(@q-)cmdline}"
-        eval "${(q)sfwBin} ${(@q)cmdline}"
+        eval "${(q)sfwBin} ${(@qq)cmdline}"
         return
         ;;
     esac
@@ -87,7 +89,7 @@ function ni-echoRun() {
 
   # Default behavior without Socket Firewall
   print -r -- "$ ${(@q-)cmdline}"
-  eval "${(@q)cmdline}"
+  eval "${(q)cmd} ${(@qq)@}"
 }
 
 # Support package manager

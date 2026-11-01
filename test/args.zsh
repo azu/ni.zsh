@@ -115,6 +115,22 @@ pnpm<--silent><run><dev><arg 1>" \
   run dev 'arg 1'
 unalias pnpm
 
+# Arguments that match global aliases (alias -g) are not expanded.
+# The words are quoted here so that this test script itself does not expand them.
+alias -g G='| grep x'
+alias -g ...='../..'
+assert pnpm \
+  "$ pnpm run dev G ...
+pnpm<run><dev><G><...>" \
+  run dev 'G' '...'
+unalias 'G' '...'
+
+# Arguments that contain single quotes are kept as-is
+assert pnpm \
+  "$ pnpm run dev it\\'s
+pnpm<run><dev><it's>" \
+  run dev "it's"
+
 # Socket Firewall wrapping keeps argument boundaries
 SFW_STUB_DIR=$(mktemp -d)
 cat > "$SFW_STUB_DIR/sfw" <<'EOF'
