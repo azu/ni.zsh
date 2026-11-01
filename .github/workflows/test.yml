@@ -3,6 +3,14 @@ on: [ push, pull_request ]
 permissions:
   contents: read
 jobs:
+  args:
+    name: Test argument forwarding
+    # zsh is pre-installed on macos-latest
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test argument forwarding
+        run: zsh test/args.zsh
   test:
     name: Test ${{ matrix.package-manager }} on macos-latest
     strategy:

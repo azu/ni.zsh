@@ -107,6 +107,7 @@ ni dlx <pkg>            -- download package and execute command
 
 - Installing devDependencies: `ni add --dev <pkg>`
 - Additional arguments for `ni run`: `ni run dev --port 8080`
+- Arguments are passed to the package manager as-is, including spaces and empty strings: `ni run dev 'arg with spaces'`
 - Update specific package: `ni upgrade <pkg>`
 
 ## Auto Complete

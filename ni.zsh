@@ -47,10 +47,15 @@ function ni-shouldUseSocketFirewall() {
   return 0
 }
 
+# Print and run a command.
+# Each argument is passed to the command as-is: arguments are quoted with ${(q)...}
+# before `eval`, so spaces, empty strings, `$`, `*`, and `$(...)` are not re-interpreted.
+# `eval` is still used so that user aliases (e.g. alias pnpm='pnpm --silent') keep working.
+# Usage: ni-echoRun <command> [args...]
 function ni-echoRun() {
   local cmd="$1"
   shift
-  local args="$@"
+  local -a cmdline=("$cmd" "$@")
 
   # Check if Socket Firewall should be used for package installation commands
   # sfw supports: npm, yarn, pnpm, bun (and pip, cargo for other ecosystems)
@@ -65,24 +70,24 @@ function ni-echoRun() {
     case $cmd in
       npm|yarn|pnpm|bun|deno)
         # Check if this is an install/add command
-        if [[ "$args" =~ ^(install|add|i) ]]; then
-          echo "$ sfw $cmd $args"
-          eval "$sfwBin $cmd $args"
+        if [[ "$1" =~ ^(install|add|i) ]]; then
+          print -r -- "$ sfw ${(@q-)cmdline}"
+          eval "${(q)sfwBin} ${(@q)cmdline}"
           return
         fi
         ;;
       npx|bunx)
         # npx and bunx commands should also use sfw
-        echo "$ sfw $cmd $args"
-        eval "$sfwBin $cmd $args"
+        print -r -- "$ sfw ${(@q-)cmdline}"
+        eval "${(q)sfwBin} ${(@q)cmdline}"
         return
         ;;
     esac
   fi
 
   # Default behavior without Socket Firewall
-  echo "$ $cmd $args"
-  eval "$cmd $args"
+  print -r -- "$ ${(@q-)cmdline}"
+  eval "${(@q)cmdline}"
 }
 
 # Support package manager
@@ -179,40 +184,40 @@ function ni() {
     case $1 in
       add)
         shift
-        ni-add $@
+        ni-add "$@"
         ;;
       run)
         shift
-        ni-run $@
+        ni-run "$@"
         ;;
       upgrade)
         shift
-        ni-upgrade $@
+        ni-upgrade "$@"
         ;;
       upgrade-interactive)
         shift
-        ni-upgrade-interactive $@
+        ni-upgrade-interactive "$@"
         ;;
       remove)
         shift
-        ni-remove $@
+        ni-remove "$@"
         ;;
       # Special ni run <script>
       test)
         shift
-        ni-run test $@
+        ni-run test "$@"
         ;;
       exec)
         shift
-        ni-exec $@
+        ni-exec "$@"
         ;;
       dlx)
         shift
-        ni-dlx $@
+        ni-dlx "$@"
         ;;
       ci)
         shift
-        ni-ci $@
+        ni-ci "$@"
         ;;
       *)
         echo "Unknown subcommand: $1"
@@ -265,71 +270,62 @@ function ni() {
 
 function ni-add() {
   # support both `ni add pkg --dev` and `ni add --dev pkg`
-  POSITIONAL_ARGS=()
-  SUPPORTED_FLGAG=()
+  local -a packages=()
+  local isDev=0
   while [[ $# -gt 0 ]]; do
-    key="$1"
-    case $key in
+    case $1 in
       -D|--dev)
-        shift
-        SUPPORTED_FLGAG+=("--dev")
+        isDev=1
         ;;
       *)
-        POSITIONAL_ARGS+=("$1")
-        shift
+        packages+=("$1")
         ;;
     esac
+    shift
   done
 
   local manager
   manager=$(ni-getPackageManager)
-  # normailze flag by package manager
-  flag=""
-  for arg in "${SUPPORTED_FLGAG}"; do
-    # --dev or -D
-    if [ "$arg" = "--dev" ] ; then
-      case $manager in
-        npm)
-          flag="$POSITIONAL_ARGS --save-dev"
-          ;;
-        yarn*)
-          flag="$POSITIONAL_ARGS --dev"
-          ;;
-        pnpm|vite-plus|aube)
-          flag="$POSITIONAL_ARGS -D"
-          ;;
-        bun)
-          flag="$POSITIONAL_ARGS -d"
-          ;;
-      esac
-    else
-      flag="$POSITIONAL_ARGS $arg"
-    fi
-  done
-  # trim space from $flag
-  flag=$(echo "$flag" | sed -e 's/^ *//')
+  # normalize flag by package manager
+  local -a args=("${packages[@]}")
+  if (( isDev )); then
+    case $manager in
+      npm)
+        args+=(--save-dev)
+        ;;
+      yarn*)
+        args+=(--dev)
+        ;;
+      pnpm|vite-plus|aube)
+        args+=(-D)
+        ;;
+      bun)
+        args+=(-d)
+        ;;
+    esac
+  fi
   # execute
   case $manager in
     npm)
-      ni-echoRun npm install $flag
+      ni-echoRun npm install "${args[@]}"
       ;;
     yarn*)
-      ni-echoRun yarn add $flag
+      ni-echoRun yarn add "${args[@]}"
       ;;
     pnpm)
-      ni-echoRun pnpm add $flag
+      ni-echoRun pnpm add "${args[@]}"
       ;;
     bun)
-      ni-echoRun bun add $flag
+      ni-echoRun bun add "${args[@]}"
       ;;
     deno)
-      ni-echoRun deno add --npm $flag
+      ni-echoRun deno add --npm "${args[@]}"
       ;;
     vite-plus)
-      ni-echoRun vp add $flag
+      ni-echoRun vp add "${args[@]}"
       ;;
     aube)
-      ni-echoRun aube add $flag
+      ni-echoRun aube add "${args[@]}"
       ;;
   esac
 }
@@ -345,35 +341,29 @@ function ni-add() {
 function ni-run(){
   local manager
   manager=$(ni-getPackageManager)
-  # npm require -- for additional args
-  additionalArgs=""
-  case $manager in
-    npm)
-      additionalArgs="--"
-      ;;
-  esac
   # execute
   case $manager in
     npm)
-      ni-echoRun npm run $additionalArgs $@
+      # npm require -- for additional args
+      ni-echoRun npm run -- "$@"
       ;;
     yarn*)
-      ni-echoRun yarn run $@
+      ni-echoRun yarn run "$@"
       ;;
     pnpm)
-      ni-echoRun pnpm run $@
+      ni-echoRun pnpm run "$@"
       ;;
     bun)
-      ni-echoRun bun run $@
+      ni-echoRun bun run "$@"
       ;;
     deno)
-      ni-echoRun deno run $@
+      ni-echoRun deno run "$@"
       ;;
     vite-plus)
-      ni-echoRun vp run $@
+      ni-echoRun vp run "$@"
       ;;
     aube)
-      ni-echoRun aube run $@
+      ni-echoRun aube run "$@"
       ;;
   esac
 }
@@ -389,32 +379,31 @@ function ni-run(){
 function ni-upgrade(){
   local manager
   manager=$(ni-getPackageManager)
-  packageName=$1
   case $manager in
     npm)
-      ni-echoRun npm upgrade $packageName
+      ni-echoRun npm upgrade ${1+"$1"}
       ;;
     yarn)
-      ni-echoRun yarn upgrade $packageName
+      ni-echoRun yarn upgrade ${1+"$1"}
       ;;
     yarn-berry)
-      ni-echoRun yarn up $packageName
+      ni-echoRun yarn up ${1+"$1"}
       ;;
     pnpm)
-      ni-echoRun pnpm update $packageName
+      ni-echoRun pnpm update ${1+"$1"}
       ;;
     bun)
       # https://bun.sh/blog/bun-v0.8.0
-      ni-echoRun bun update $packageName
+      ni-echoRun bun update ${1+"$1"}
       ;;
     deno)
-      ni-echoRun deno outdated --update $packageName
+      ni-echoRun deno outdated --update ${1+"$1"}
       ;;
     vite-plus)
-      ni-echoRun vp update $packageName
+      ni-echoRun vp update ${1+"$1"}
       ;;
     aube)
-      ni-echoRun aube update $packageName
+      ni-echoRun aube update ${1+"$1"}
       ;;
   esac
 }
@@ -432,7 +421,7 @@ function ni-upgrade-interactive(){
       ni-echoRun yarn upgrade-interactive --latest
       ;;
     yarn-berry)
-      ni-echoRun 'yarn up --interactive "*"'
+      ni-echoRun yarn up --interactive '*'
       ;;
     pnpm)
       ni-echoRun pnpm --recursive update -i --latest
@@ -465,25 +454,25 @@ function ni-remove(){
   manager=$(ni-getPackageManager)
   case $manager in
     npm)
-      ni-echoRun npm uninstall $@
+      ni-echoRun npm uninstall "$@"
       ;;
     yarn*)
-      ni-echoRun yarn remove $@
+      ni-echoRun yarn remove "$@"
       ;;
     pnpm)
-      ni-echoRun pnpm remove $@
+      ni-echoRun pnpm remove "$@"
       ;;
     bun)
-      ni-echoRun bun remove $@
+      ni-echoRun bun remove "$@"
       ;;
     deno)
-      ni-echoRun deno uninstall $@
+      ni-echoRun deno uninstall "$@"
       ;;
     vite-plus)
-      ni-echoRun vp remove $@
+      ni-echoRun vp remove "$@"
       ;;
     aube)
-      ni-echoRun aube remove $@
+      ni-echoRun aube remove "$@"
       ;;
   esac
 }
@@ -502,29 +491,29 @@ function ni-exec(){
   case $manager in
     npm)
       # https://docs.npmjs.com/cli/v8/commands/npm-exec
-      ni-echoRun npm exec --no -- $@
+      ni-echoRun npm exec --no -- "$@"
       ;;
     yarn)
       # yarn v1 does not support exec
-      ni-echoRun yarn $@
+      ni-echoRun yarn "$@"
       ;;
     yarn-berry)
-      ni-echoRun yarn exec $@
+      ni-echoRun yarn exec "$@"
       ;;
     pnpm)
-      ni-echoRun pnpm exec $@
+      ni-echoRun pnpm exec "$@"
       ;;
     bun)
-      ni-echoRun bunx $@
+      ni-echoRun bunx "$@"
       ;;
     deno)
       echo "deno does not support exec command"
       ;;
     vite-plus)
-      ni-echoRun vp exec $@
+      ni-echoRun vp exec "$@"
       ;;
     aube)
-      ni-echoRun aube exec $@
+      ni-echoRun aube exec "$@"
       ;;
   esac
 }
@@ -542,29 +531,29 @@ function ni-dlx(){
   manager=$(ni-getPackageManager)
   case $manager in
     npm)
-      ni-echoRun npx $@
+      ni-echoRun npx "$@"
       ;;
     yarn)
       # yarn v1 does not support dlx
-      ni-echoRun npx $@
+      ni-echoRun npx "$@"
       ;;
     yarn-berry)
-      ni-echoRun yarn dlx $@
+      ni-echoRun yarn dlx "$@"
       ;;
     pnpm)
-      ni-echoRun pnpm dlx $@
+      ni-echoRun pnpm dlx "$@"
       ;;
     bun)
-      ni-echoRun bunx $@
+      ni-echoRun bunx "$@"
       ;;
     deno)
-      ni-echoRun deno x $@
+      ni-echoRun deno x "$@"
       ;;
     vite-plus)
-      ni-echoRun vp dlx $@
+      ni-echoRun vp dlx "$@"
       ;;
     aube)
-      ni-echoRun aube dlx $@
+      ni-echoRun aube dlx "$@"
       ;;
   esac
 }
