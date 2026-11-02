@@ -383,29 +383,29 @@ function ni-upgrade(){
   manager=$(ni-getPackageManager)
   case $manager in
     npm)
-      ni-echoRun npm upgrade ${1+"$1"}
+      ni-echoRun npm upgrade "$@"
       ;;
     yarn)
-      ni-echoRun yarn upgrade ${1+"$1"}
+      ni-echoRun yarn upgrade "$@"
       ;;
     yarn-berry)
-      ni-echoRun yarn up ${1+"$1"}
+      ni-echoRun yarn up "$@"
       ;;
     pnpm)
-      ni-echoRun pnpm update ${1+"$1"}
+      ni-echoRun pnpm update "$@"
       ;;
     bun)
       # https://bun.sh/blog/bun-v0.8.0
-      ni-echoRun bun update ${1+"$1"}
+      ni-echoRun bun update "$@"
       ;;
     deno)
-      ni-echoRun deno outdated --update ${1+"$1"}
+      ni-echoRun deno outdated --update "$@"
       ;;
     vite-plus)
-      ni-echoRun vp update ${1+"$1"}
+      ni-echoRun vp update "$@"
       ;;
     aube)
-      ni-echoRun aube update ${1+"$1"}
+      ni-echoRun aube update "$@"
       ;;
   esac
 }
